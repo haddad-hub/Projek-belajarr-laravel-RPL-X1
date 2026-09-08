@@ -67,6 +67,7 @@
       courierId:'',
       courierName:'',
       revenue:0,
+      rating:0,
       completedAt:''
     };
     data.orders.unshift(order);
@@ -127,6 +128,16 @@
     write(data);
     return order;
   }
+  function rateOrder(orderId,rating){
+    const data=read();
+    const order=data.orders.find(item=>item.id===orderId);
+    const value=Math.round(Number(rating));
+    if(!order||order.status!=='completed'||value<1||value>5)return null;
+    order.rating=value;
+    order.ratedAt=new Date().toISOString();
+    write(data);
+    return order;
+  }
   function toAnalyticsPayload(){
     const data=read();
     return {
@@ -149,11 +160,12 @@
         courier:order.courierName||'Belum Diambil',
         courierName:order.courierName,
         status:order.status,
-        revenue:money(order.revenue)
+        revenue:money(order.revenue),
+        rating:Math.max(0,Math.min(5,Math.round(Number(order.rating)||0)))
       })),
       finance:data.finance,
       couriers:data.couriers
     };
   }
-  window.BonjekStore={STORAGE_KEY,read,write,createOrder,acceptOrder,completeOrder,confirmOrder,upsertCourier,toAnalyticsPayload};
+  window.BonjekStore={STORAGE_KEY,read,write,createOrder,acceptOrder,completeOrder,confirmOrder,rateOrder,upsertCourier,toAnalyticsPayload};
 })();
