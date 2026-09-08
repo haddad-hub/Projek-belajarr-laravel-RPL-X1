@@ -79,4 +79,31 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
         $response->assertRedirect('/');
     }
+
+    public function test_authenticated_users_can_read_customer_and_courier_api_data(): void
+    {
+        $viewer = User::factory()->create(['role' => 'customer']);
+        $customer = User::factory()->create(['role' => 'customer']);
+        $courier = User::factory()->create([
+            'role' => 'courier',
+            'vehicle' => 'Motor',
+        ]);
+
+        $this->actingAs($viewer)
+            ->getJson('/api/customers')
+            ->assertOk()
+            ->assertJsonFragment(['id' => $customer->id, 'email' => $customer->email])
+            ->assertJsonMissing(['vehicle']);
+
+        $this->actingAs($viewer)
+            ->getJson('/api/couriers')
+            ->assertOk()
+            ->assertJsonFragment(['id' => $courier->id, 'vehicle' => 'Motor']);
+    }
+
+    public function test_api_user_data_requires_authentication(): void
+    {
+        $this->getJson('/api/customers')->assertUnauthorized();
+        $this->getJson('/api/couriers')->assertUnauthorized();
+    }
 }

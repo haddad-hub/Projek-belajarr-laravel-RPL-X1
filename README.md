@@ -53,6 +53,24 @@ In order to ensure that the Laravel community is welcoming to all, please review
 
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
+## Bonjek MySQL dan API
+
+Data akun pelanggan dan kurir disimpan di tabel `users` pada MySQL. Salin `.env.example` menjadi `.env`, lalu sesuaikan `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` dengan server MySQL lokal.
+
+```bash
+php artisan migrate
+php artisan serve
+```
+
+API membutuhkan sesi login Bonjek yang aktif:
+
+- `GET /api/customers` mengambil daftar pelanggan.
+- `GET /api/customers/{id}` mengambil satu pelanggan.
+- `GET /api/couriers` mengambil daftar kurir.
+- `GET /api/couriers/{id}` mengambil satu kurir.
+
+Respons API hanya mengirim data profil yang diperlukan; password dan token sesi tidak pernah dikirim.
+
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
