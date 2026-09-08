@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Sederhana</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: Arial, sans-serif;
+      color: #172033;
+      background:
+        radial-gradient(circle at top left, rgba(0, 166, 118, 0.22), transparent 32%),
+        linear-gradient(135deg, #f7fbff, #eaf2ff 48%, #f8fff8);
+    }
+
+    .calculator {
+      width: min(92vw, 360px);
+      padding: 18px;
+      border: 1px solid #d7e0ef;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 22px 60px rgba(23, 32, 51, 0.12);
+    }
+
+    .display {
+      min-height: 86px;
+      margin-bottom: 14px;
+      padding: 18px;
+      border-radius: 14px;
+      background: #111827;
+      color: #ffffff;
+      text-align: right;
+      overflow: hidden;
+    }
+
+    .expression {
+      min-height: 20px;
+      color: #aab7cc;
+      font-size: 14px;
+      word-break: break-all;
+    }
+
+    .result {
+      margin-top: 8px;
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 1.1;
+      word-break: break-all;
+    }
+
+    .keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      min-height: 58px;
+      border: 0;
+      border-radius: 14px;
+      background: #edf2f8;
+      color: #172033;
+      font: inherit;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.14s ease, background 0.14s ease;
+    }
+
+    button:hover {
+      background: #dfe8f4;
+      transform: translateY(-1px);
+    }
+
+    .operator {
+      background: #dff7ee;
+      color: #047857;
+    }
+
+    .operator:hover {
+      background: #c9efdf;
+    }
+
+    .danger {
+      background: #ffe2e2;
+      color: #b91c1c;
+    }
+
+    .danger:hover {
+      background: #ffd0d0;
+    }
+
+    .equals {
+      grid-column: span 2;
+      background: #047857;
+      color: #ffffff;
+    }
+
+    .equals:hover {
+      background: #036b4d;
+    }
+  </style>
+</head>
+<body>
+  <main class="calculator" aria-label="Kalkulator sederhana">
+    <div class="display" aria-live="polite">
+      <div class="expression" id="expression"></div>
+      <div class="result" id="result">0</div>
+    </div>
+
+    <div class="keys">
+      <button class="danger" onclick="clearCalculator()">C</button>
+      <button onclick="deleteLast()">DEL</button>
+      <button class="operator" onclick="addOperator('/')">/</button>
+      <button class="operator" onclick="addOperator('*')">*</button>
+
+      <button onclick="addNumber('7')">7</button>
+      <button onclick="addNumber('8')">8</button>
+      <button onclick="addNumber('9')">9</button>
+      <button class="operator" onclick="addOperator('-')">-</button>
+
+      <button onclick="addNumber('4')">4</button>
+      <button onclick="addNumber('5')">5</button>
+      <button onclick="addNumber('6')">6</button>
+      <button class="operator" onclick="addOperator('+')">+</button>
+
+      <button onclick="addNumber('1')">1</button>
+      <button onclick="addNumber('2')">2</button>
+      <button onclick="addNumber('3')">3</button>
+      <button onclick="addDecimal()">.</button>
+
+      <button onclick="addNumber('0')">0</button>
+      <button onclick="toggleMinus()">+/-</button>
+      <button class="equals" onclick="calculate()">=</button>
+    </div>
+  </main>
+
+  <script>
+    const expressionElement = document.getElementById("expression");
+    const resultElement = document.getElementById("result");
+    let expression = "";
+    let justCalculated = false;
+
+    function updateDisplay() {
+      expressionElement.textContent = expression;
+      resultElement.textContent = expression || "0";
+    }
+
+    function addNumber(number) {
+      if (justCalculated) {
+        expression = "";
+        justCalculated = false;
+      }
+
+      expression += number;
+      updateDisplay();
+    }
+
+    function addOperator(operator) {
+      if (!expression) {
+        return;
+      }
+
+      justCalculated = false;
+
+      if (isOperator(expression.at(-1))) {
+        expression = expression.slice(0, -1);
+      }
+
+      expression += operator;
+      updateDisplay();
+    }
+
+    function addDecimal() {
+      const currentNumber = expression.split(/[+\-*/]/).pop();
+
+      if (!currentNumber.includes(".")) {
+        expression += currentNumber ? "." : "0.";
+        updateDisplay();
+      }
+    }
+
+    function toggleMinus() {
+      if (!expression || expression === "0") {
+        return;
+      }
+
+      if (expression.startsWith("-")) {
+        expression = expression.slice(1);
+      } else {
+        expression = "-" + expression;
+      }
+
+      updateDisplay();
+    }
+
+    function deleteLast() {
+      expression = expression.slice(0, -1);
+      justCalculated = false;
+      updateDisplay();
+    }
+
+    function clearCalculator() {
+      expression = "";
+      justCalculated = false;
+      updateDisplay();
+    }
+
+    function calculate() {
+      if (!expression || isOperator(expression.at(-1))) {
+        return;
+      }
+
+      try {
+        const result = Function(`"use strict"; return (${expression})`)();
+
+        if (!Number.isFinite(result)) {
+          resultElement.textContent = "Error";
+          return;
+        }
+
+        expressionElement.textContent = expression;
+        resultElement.textContent = Number(result.toFixed(10)).toString();
+        expression = resultElement.textContent;
+        justCalculated = true;
+      } catch (error) {
+        resultElement.textContent = "Error";
+      }
+    }
+
+    function isOperator(value) {
+      return ["+", "-", "*", "/"].includes(value);
+    }
+  </script>
+</body>
+</html>

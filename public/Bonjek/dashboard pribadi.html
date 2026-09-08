@@ -1,0 +1,981 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyDash — Personal Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script>
+tailwind.config={theme:{extend:{colors:{bg:'#0b0d13',surface:'#0f1219',card:'#161a25',cardhover:'#1c2130',border:'#232840',muted:'#636d8c',accent:'#e8a838',accentdim:'rgba(232,168,56,0.12)'},fontFamily:{display:['Space Grotesk','sans-serif'],body:['DM Sans','sans-serif']}}}}
+</script>
+<style>
+:root{
+  --bg:#0b0d13;--surface:#0f1219;--card:#161a25;--card-hover:#1c2130;--border:#232840;--border-strong:#2f3555;
+  --text:#e4e7ef;--muted:#636d8c;--muted-soft:#4a5270;--accent:#e8a838;--accent-2:#d4922e;--accent-text:#0b0d13;
+  --accent-dim:rgba(232,168,56,0.12);--grid:#1e2235;--hover:rgba(255,255,255,.04);--shadow:rgba(0,0,0,.3);
+  --glow-a:rgba(232,168,56,0.04);--glow-b:rgba(52,211,153,0.03)
+}
+body[data-theme="light"]{
+  --bg:#f4f6fb;--surface:#ffffff;--card:#ffffff;--card-hover:#eef1f8;--border:#d8deeb;--border-strong:#b9c3d7;
+  --text:#171b26;--muted:#657087;--muted-soft:#8791a5;--accent:#b7791f;--accent-2:#d69e2e;--accent-text:#ffffff;
+  --accent-dim:rgba(183,121,31,0.12);--grid:#e5eaf3;--hover:rgba(15,23,42,.05);--shadow:rgba(15,23,42,.12);
+  --glow-a:rgba(183,121,31,0.07);--glow-b:rgba(37,99,235,0.05)
+}
+body[data-theme="white-pink"]{
+  --bg:#fff7fb;--surface:#ffffff;--card:#ffffff;--card-hover:#fff0f7;--border:#f5cfe0;--border-strong:#ec9fbd;
+  --text:#27151f;--muted:#8b6074;--muted-soft:#ad8397;--accent:#db2777;--accent-2:#f472b6;--accent-text:#ffffff;
+  --accent-dim:rgba(219,39,119,0.12);--grid:#f8d9e8;--hover:rgba(219,39,119,.06);--shadow:rgba(157,23,77,.13);
+  --glow-a:rgba(219,39,119,0.08);--glow-b:rgba(244,114,182,0.06)
+}
+body[data-theme="maroon-warm"]{
+  --bg:#19090d;--surface:#241015;--card:#32161c;--card-hover:#411d24;--border:#5c2730;--border-strong:#7f3542;
+  --text:#fff4df;--muted:#d8aa77;--muted-soft:#a97452;--accent:#f2b84b;--accent-2:#ffd36a;--accent-text:#35120f;
+  --accent-dim:rgba(242,184,75,0.14);--grid:#52232b;--hover:rgba(255,211,106,.07);--shadow:rgba(0,0,0,.34);
+  --glow-a:rgba(242,184,75,0.07);--glow-b:rgba(127,29,29,0.08)
+}
+*{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;margin:0;overflow-x:hidden;transition:background .25s,color .25s}
+body::before{content:'';position:fixed;top:-15%;right:-8%;width:500px;height:500px;background:radial-gradient(circle,var(--glow-a) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;bottom:-10%;left:10%;width:400px;height:400px;background:radial-gradient(circle,var(--glow-b) 0%,transparent 70%);pointer-events:none;z-index:0}
+.nav-btn{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border-radius:10px;font-size:14px;color:var(--muted);transition:all .2s;border:none;background:none;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif}
+.nav-btn:hover{color:var(--text);background:var(--hover)}
+.nav-btn.active{color:var(--accent);background:var(--accent-dim);font-weight:600}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 22px;transition:all .3s;position:relative;overflow:hidden}
+.stat-card:hover{border-color:var(--border-strong);transform:translateY(-2px);box-shadow:0 8px 30px var(--shadow)}
+.stat-card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;filter:blur(40px);opacity:.15;pointer-events:none}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;transition:all .3s}
+.card:hover{border-color:var(--border-strong)}
+.page{display:none;animation:fadeUp .35s ease}.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(232,168,56,.4)}70%{box-shadow:0 0 0 12px rgba(232,168,56,0)}100%{box-shadow:0 0 0 0 rgba(232,168,56,0)}}
+.pulse-btn{animation:pulse-ring 2s infinite}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-text);font-weight:600;border:none;border-radius:10px;padding:10px 20px;cursor:pointer;font-size:14px;transition:all .2s;font-family:'DM Sans',sans-serif}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px color-mix(in srgb,var(--accent) 30%,transparent)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 20px;cursor:pointer;font-size:14px;transition:all .2s;font-family:'DM Sans',sans-serif}
+.btn-ghost:hover{border-color:var(--border-strong);background:var(--hover)}
+.input-field{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 14px;font-size:14px;width:100%;outline:none;transition:border .2s;font-family:'DM Sans',sans-serif}
+.input-field:focus{border-color:var(--accent)}
+.input-field::placeholder{color:var(--muted-soft)}
+select.input-field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23636d8c' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.todo-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--grid);transition:all .2s}
+.todo-item:hover{border-color:var(--border-strong)}
+.todo-item.done .todo-text{text-decoration:line-through;color:var(--muted-soft)}
+.custom-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border-strong);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.custom-check.checked{background:var(--accent);border-color:var(--accent)}
+.custom-check.checked::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;font-size:10px;color:var(--accent-text)}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.gallery-item{aspect-ratio:1;border-radius:12px;overflow:hidden;cursor:pointer;position:relative;border:1px solid var(--border);transition:all .3s}
+.gallery-item:hover{border-color:var(--accent);transform:scale(1.02)}
+.gallery-item img{width:100%;height:100%;object-fit:cover}
+.gallery-item .overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7),transparent);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:10px}
+.gallery-item:hover .overlay{opacity:1}
+.folder-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all .3s;position:relative}
+.folder-card:hover{border-color:var(--border-strong);transform:translateY(-2px);box-shadow:0 8px 25px var(--shadow)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:60;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:480px;margin:16px;animation:fadeUp .25s ease}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:70;display:none;align-items:center;justify-content:center;cursor:zoom-out}
+.lightbox.show{display:flex}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain}
+#toast-container{position:fixed;top:20px;right:20px;z-index:80;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 18px;border-radius:12px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;animation:slideIn .3s ease;min-width:240px}
+.toast.out{animation:slideOut .3s ease forwards}
+@keyframes slideOut{to{opacity:0;transform:translateX(40px)}}
+.streak-fire{display:inline-block;animation:firePulse 1.5s ease-in-out infinite}
+@keyframes firePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@media(max-width:768px){#sidebar{transform:translateX(-100%)}#sidebar.open{transform:translateX(0)}main{margin-left:0!important}.mobile-toggle{display:flex!important}}
+.priority-high{border-left:3px solid #f87171}.priority-medium{border-left:3px solid #fbbf24}.priority-low{border-left:3px solid #34d399}
+.bg-bg\/80{background-color:color-mix(in srgb,var(--bg) 80%,transparent)!important}.bg-surface{background-color:var(--surface)!important}.bg-card{background-color:var(--card)!important}.border-border{border-color:var(--border)!important}.text-muted{color:var(--muted)!important}.text-accent{color:var(--accent)!important}.hover\:text-accent:hover{color:var(--accent)!important}.hover\:text-white:hover{color:var(--text)!important}.hover\:border-accent:hover{border-color:var(--accent)!important}.hover\:border-accent\/50:hover{border-color:color-mix(in srgb,var(--accent) 50%,transparent)!important}.bg-accentdim{background-color:var(--accent-dim)!important}.border-accent{border-color:var(--accent)!important}.text-gray-300{color:var(--text)!important}.pengaturan{max-width:920px}.theme-option{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:16px;border:1px solid var(--border);background:var(--card);border-radius:14px;text-align:left;transition:all .2s}.theme-option:hover{border-color:var(--border-strong);background:var(--card-hover)}.theme-option.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}.theme-swatch{display:flex;width:78px;height:34px;border-radius:10px;overflow:hidden;border:1px solid var(--border);flex-shrink:0}.theme-swatch span{flex:1}
+.danger-link{color:#f87171}.danger-link:hover{color:#fca5a5}.profile-avatar{width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;overflow:hidden;flex-shrink:0;box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 18%,transparent)}.profile-avatar img{width:100%;height:100%;object-fit:cover}.profile-panel{border:1px solid var(--border);background:var(--surface);border-radius:16px;padding:18px}.profile-color-pick{width:34px;height:34px;border-radius:10px;border:2px solid transparent;cursor:pointer;transition:all .2s}.profile-color-pick.active{border-color:var(--text);transform:scale(1.05)}
+</style>
+</head>
+<body>
+
+<!-- Mobile Toggle -->
+<button onclick="document.getElementById('sidebar').classList.toggle('open')" class="mobile-toggle hidden fixed top-4 left-4 z-[55] w-10 h-10 rounded-xl bg-card border border-border items-center justify-center text-muted hover:text-white" style="display:none">
+<i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-60 bg-surface border-r border-border flex flex-col z-50 transition-transform duration-300">
+  <div class="px-5 py-5 border-b border-border">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
+        <i class="fas fa-cube text-white text-sm"></i>
+      </div>
+      <span class="font-display font-bold text-lg tracking-tight">MyDash</span>
+    </div>
+  </div>
+  <nav class="flex-1 py-4 px-3 space-y-1" id="sidebar-nav">
+    <button class="nav-btn active" data-page="dashboard"><i class="fas fa-th-large w-5 text-center"></i><span>Dashboard</span></button>
+    <button class="nav-btn" data-page="aktivitas"><i class="fas fa-bolt w-5 text-center"></i><span>Aktivitas</span></button>
+    <button class="nav-btn" data-page="todo"><i class="fas fa-check-circle w-5 text-center"></i><span>To-Do</span></button>
+    <button class="nav-btn" data-page="galeri"><i class="fas fa-images w-5 text-center"></i><span>Galeri</span></button>
+    <button class="nav-btn" data-page="folder"><i class="fas fa-folder w-5 text-center"></i><span>Folder</span></button>
+    <button class="nav-btn" data-page="pengaturan"><i class="fas fa-gear w-5 text-center"></i><span>Pengaturan</span></button>
+  </nav>
+  <div class="px-5 py-4 border-t border-border" id="sidebar-user"></div>
+</aside>
+
+<!-- Main Content -->
+<main class="ml-60 min-h-screen relative z-10" id="main-content">
+  <!-- Top Bar -->
+  <header class="sticky top-0 z-40 bg-bg/80 backdrop-blur-xl border-b border-border px-8 py-4 flex items-center justify-between">
+    <div>
+      <h1 class="font-display font-bold text-xl" id="page-title">Dashboard</h1>
+      <p class="text-xs text-muted mt-0.5" id="header-date"></p>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-sm text-muted font-mono" id="live-clock"></span>
+      <div class="w-8 h-8 rounded-lg bg-card border border-border flex items-center justify-center text-muted text-xs cursor-pointer hover:text-accent transition-colors">
+        <i class="fas fa-bell"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="page active p-3" id="page-dashboard">
+    <div id="dash-greeting" class="mb-6"></div>
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6" id="dash-stats"></div>
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
+      <div class="card p-6 lg:col-span-2 flex flex-col items-center">
+        <h3 class="font-display font-semibold text-sm text-muted mb-4 self-start">Produktivitas Hari Ini</h3>
+        <div class="relative" style="width:180px;height:180px"><canvas id="chart-prod"></canvas>
+          <div class="absolute inset-0 flex flex-col items-center justify-center"><span class="font-display font-bold text-3xl" id="prod-pct">0%</span><span class="text-xs text-muted mt-1" id="prod-label">Menghitung...</span></div>
+        </div>
+      </div>
+      <div class="card p-6 lg:col-span-3">
+        <h3 class="font-display font-semibold text-sm text-muted mb-4">Aktivitas Mingguan</h3>
+        <div style="height:180px"><canvas id="chart-weekly"></canvas></div>
+      </div>
+    </div>
+    <!-- Bottom Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="card p-6">
+        <div class="flex items-center justify-between mb-4"><h3 class="font-display font-semibold text-sm text-muted">To-Do Hari Ini</h3><button class="text-xs text-accent hover:underline" onclick="navigateTo('todo')">Lihat Semua</button></div>
+        <div id="dash-todo-preview" class="space-y-2"></div>
+      </div>
+      <div class="card p-6">
+        <div class="flex items-center justify-between mb-4"><h3 class="font-display font-semibold text-sm text-muted">Aktivitas Terbaru</h3><button class="text-xs text-accent hover:underline" onclick="navigateTo('aktivitas')">Lihat Semua</button></div>
+        <div id="dash-recent-act" class="space-y-2"></div>
+      </div>
+      <div class="card p-6 flex flex-col justify-between">
+        <div>
+          <h3 class="font-display font-semibold text-sm text-muted mb-3">Kutipan Hari Ini</h3>
+          <p class="text-sm italic leading-relaxed text-gray-300" id="daily-quote"></p>
+          <p class="text-xs text-muted mt-2" id="quote-author"></p>
+        </div>
+        <div class="mt-4 pt-4 border-t border-border">
+          <h4 class="text-xs text-muted mb-2">Status Dashboard</h4>
+          <p class="font-display font-bold text-xl text-accent">Fresh</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AKTIVITAS ============ -->
+  <section class="page p-8" id="page-aktivitas">
+    <div class="flex items-center justify-between mb-6">
+      <div><h2 class="font-display font-bold text-2xl">Aktivitas</h2><p class="text-sm text-muted mt-1">Catat semua aktivitasmu di sini</p></div>
+      <button class="btn-primary" onclick="showAddActivityModal()"><i class="fas fa-plus mr-2"></i>Tambah Aktivitas</button>
+    </div>
+    <div class="flex gap-2 mb-6 flex-wrap" id="activity-filters"></div>
+    <div id="activity-list" class="space-y-3"></div>
+    <div id="activity-empty" class="hidden text-center py-16"><i class="fas fa-bolt text-4xl text-border mb-4"></i><p class="text-muted">Belum ada aktivitas. Mulai catat aktivitasmu!</p></div>
+  </section>
+
+  <!-- ============ TO-DO ============ -->
+  <section class="page p-8" id="page-todo">
+    <div class="flex items-center justify-between mb-6">
+      <div><h2 class="font-display font-bold text-2xl">Daily Check-in & To-Do</h2><p class="text-sm text-muted mt-1">Tandai kehadiranmu dan selesaikan tugas harian</p></div>
+      <button class="btn-primary" onclick="showAddTodoModal()"><i class="fas fa-plus mr-2"></i>Tambah Tugas</button>
+    </div>
+    <!-- Check-in -->
+    <div class="card p-6 mb-6">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center gap-4">
+          <button id="checkin-btn" class="w-16 h-16 rounded-2xl border-2 border-dashed border-accent text-accent flex items-center justify-center text-2xl transition-all hover:bg-accentdim pulse-btn" onclick="doCheckIn()"><i class="fas fa-sun"></i></button>
+          <div>
+            <p class="font-display font-semibold">Daily Check-in</p>
+            <p class="text-sm text-muted" id="checkin-status">Belum check-in hari ini</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="text-center px-4"><p class="font-display font-bold text-2xl" id="streak-count">0</p><p class="text-xs text-muted">Hari Streak <span class="streak-fire">🔥</span></p></div>
+          <div class="text-center px-4 border-l border-border"><p class="font-display font-bold text-2xl" id="total-checkins">0</p><p class="text-xs text-muted">Total Check-in</p></div>
+        </div>
+      </div>
+    </div>
+    <!-- Filter -->
+    <div class="flex gap-2 mb-4 flex-wrap" id="todo-filters"></div>
+    <!-- Todo List -->
+    <div id="todo-list" class="space-y-2"></div>
+    <div id="todo-empty" class="hidden text-center py-16"><i class="fas fa-check-circle text-4xl text-border mb-4"></i><p class="text-muted">Tidak ada tugas. Tambahkan tugas baru!</p></div>
+  </section>
+
+  <!-- ============ GALERI ============ -->
+  <section class="page p-8" id="page-galeri">
+    <div class="flex items-center justify-between mb-6">
+      <div><h2 class="font-display font-bold text-2xl">Galeri Foto</h2><p class="text-sm text-muted mt-1">Upload dan simpan momen-momen pentingmu</p></div>
+      <label class="btn-primary cursor-pointer"><i class="fas fa-cloud-upload-alt mr-2"></i>Upload Foto<input type="file" accept="image/*" multiple class="hidden" onchange="handlePhotoUpload(event)"></label>
+    </div>
+    <div class="gallery-grid" id="gallery-grid"></div>
+    <div id="gallery-empty" class="hidden text-center py-20"><i class="fas fa-images text-5xl text-border mb-4"></i><p class="text-muted mb-2">Galeri kosong</p><p class="text-xs text-muted">Klik tombol upload untuk menambahkan foto</p></div>
+  </section>
+
+  <!-- ============ FOLDER ============ -->
+  <section class="page p-8" id="page-folder">
+    <div id="folder-list-view">
+      <div class="flex items-center justify-between mb-6">
+        <div><h2 class="font-display font-bold text-2xl">Folder Data</h2><p class="text-sm text-muted mt-1">Simpan data pentingmu dalam folder terorganisir</p></div>
+        <button class="btn-primary" onclick="showAddFolderModal()"><i class="fas fa-plus mr-2"></i>Buat Folder</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="folder-grid"></div>
+      <div id="folder-empty" class="hidden text-center py-16"><i class="fas fa-folder-open text-4xl text-border mb-4"></i><p class="text-muted">Belum ada folder. Buat folder pertamamu!</p></div>
+    </div>
+    <div id="folder-detail-view" class="hidden">
+      <button class="btn-ghost mb-6" onclick="closeFolderDetail()"><i class="fas fa-arrow-left mr-2"></i>Kembali ke Folder</button>
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" id="folder-detail-icon"><i class="fas fa-folder"></i></div><div><h2 class="font-display font-bold text-2xl" id="folder-detail-name"></h2><p class="text-sm text-muted" id="folder-detail-count"></p></div></div>
+        <button class="btn-primary" onclick="showAddFolderItemModal()"><i class="fas fa-plus mr-2"></i>Tambah Item</button>
+      </div>
+      <div id="folder-items-list" class="space-y-2"></div>
+      <div id="folder-items-empty" class="hidden text-center py-12"><i class="fas fa-file-alt text-3xl text-border mb-3"></i><p class="text-muted text-sm">Folder kosong. Tambahkan item baru.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ PENGATURAN ============ -->
+  <section class="page p-8 pengaturan" id="page-pengaturan">
+    <div class="mb-6">
+      <h2 class="font-display font-bold text-2xl">Pengaturan</h2>
+      <p class="text-sm text-muted mt-1">Atur tampilan dashboard sesuai suasana yang kamu inginkan</p>
+    </div>
+    <div class="card p-6 mb-5">
+      <div class="flex items-center justify-between gap-4 mb-5">
+        <div>
+          <h3 class="font-display font-semibold text-base">Profil Pengguna</h3>
+          <p class="text-sm text-muted mt-1">Login dan kostum profil yang tampil di sidebar</p>
+        </div>
+        <i class="fas fa-user-gear text-accent"></i>
+      </div>
+      <div id="profile-settings"></div>
+    </div>
+    <div class="card p-6">
+      <div class="flex items-center justify-between gap-4 mb-5">
+        <div>
+          <h3 class="font-display font-semibold text-base">Tema Dashboard</h3>
+          <p class="text-sm text-muted mt-1">Pilih salah satu tema warna untuk seluruh dashboard</p>
+        </div>
+        <i class="fas fa-palette text-accent"></i>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="theme-options"></div>
+    </div>
+  </section>
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)hideModal()">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="font-display font-bold text-lg" id="modal-title"></h3>
+      <button onclick="hideModal()" class="text-muted hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('show')">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<script>
+/* ================================================================
+   STATE & DATA
+   ================================================================ */
+const TODAY = new Date().toISOString().slice(0,10);
+const STORAGE_KEY = 'myDashState';
+const RESET_KEY = 'myDashFreshResetV2';
+const DAY_NAMES = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+const MONTH_NAMES = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+const CATEGORIES = {
+  'Kesehatan':{color:'#34d399',icon:'fa-heart-pulse'},
+  'Pendidikan':{color:'#60a5fa',icon:'fa-graduation-cap'},
+  'Pekerjaan':{color:'#e8a838',icon:'fa-briefcase'},
+  'Pengembangan Diri':{color:'#c084fc',icon:'fa-seedling'},
+  'Sosial':{color:'#f472b6',icon:'fa-users'},
+  'Lainnya':{color:'#94a3b8',icon:'fa-ellipsis'}
+};
+
+const QUOTES = [
+  {text:'Kesuksesan adalah hasil dari persiapan, kerja keras, dan belajar dari kegagalan.',author:'Colin Powell'},
+  {text:'Jangan menunggu. Waktunya tidak akan pernah tepat.',author:'Napoleon Hill'},
+  {text:'Satu-satunya cara untuk melakukan pekerjaan hebat adalah mencintai apa yang kamu lakukan.',author:'Steve Jobs'},
+  {text:'Disiplin adalah jembatan antara tujuan dan pencapaian.',author:'Jim Rohn'},
+  {text:'Kamu tidak harus hebat untuk memulai, tapi kamu harus memulai untuk menjadi hebat.',author:'Zig Ziglar'},
+  {text:'Produktivitas bukan tentang seberapa sibuk kamu, tapi seberapa banyak yang kamu selesaikan.',author:'Tim Ferriss'},
+  {text:'Hari ini adalah hari terbaik untuk memulai sesuatu yang besar.',author:'Anonymous'}
+];
+
+const DEFAULT_STATE = {
+  theme:'default',
+  user:{hasAccount:false,isLoggedIn:false,name:'',username:'',password:'',bio:'Personal Space',avatar:'',color:'#e8a838'},
+  checkInDates:[],
+  activities:[],
+  todos:[],
+  photos:[],
+  folders:[],
+  weeklyActivityCounts:[0,0,0,0,0,0,0]
+};
+
+let state;
+const charts={};
+let pendingProfileAvatar='';
+const THEMES=[
+  {id:'default',name:'Default',desc:'Gelap dengan aksen emas',swatch:['#0b0d13','#161a25','#e8a838']},
+  {id:'light',name:'Terang',desc:'Kebalikan dari tema default',swatch:['#f4f6fb','#ffffff','#b7791f']},
+  {id:'white-pink',name:'Putih Pink',desc:'Putih bersih dengan aksen pink',swatch:['#fff7fb','#ffffff','#db2777']},
+  {id:'maroon-warm',name:'Merah Maroon & Kuning Hangat',desc:'Maroon pekat dengan aksen kuning hangat',swatch:['#19090d','#32161c','#f2b84b']}
+];
+
+function loadState(){
+  try{
+    if(!localStorage.getItem(RESET_KEY)){
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(RESET_KEY,'1');
+    }
+    const s=localStorage.getItem(STORAGE_KEY);
+    state=s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_STATE));
+  }
+  catch(e){state=JSON.parse(JSON.stringify(DEFAULT_STATE));}
+  if(!state.theme)state.theme='default';
+  if(!state.user)state.user=JSON.parse(JSON.stringify(DEFAULT_STATE.user));
+  state.user={...DEFAULT_STATE.user,...state.user};
+  state.checkInDates=Array.isArray(state.checkInDates)?state.checkInDates:[];
+  state.activities=Array.isArray(state.activities)?state.activities:[];
+  state.todos=Array.isArray(state.todos)?state.todos:[];
+  state.photos=Array.isArray(state.photos)?state.photos:[];
+  state.folders=Array.isArray(state.folders)?state.folders:[];
+  state.weeklyActivityCounts=Array.isArray(state.weeklyActivityCounts)?state.weeklyActivityCounts:[0,0,0,0,0,0,0];
+  delete state.hiddenFolder;
+  delete state.wallets;
+  delete state.transactions;
+}
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){showToast('Penyimpanan penuh! Hapus beberapa data.','error');}}
+function nextId(arr){return arr.length?Math.max(...arr.map(i=>i.id))+1:1;}
+function formatRp(n){return'Rp '+n.toLocaleString('id-ID');}
+function getGreeting(){const h=new Date().getHours();if(h<11)return'Selamat Pagi';if(h<15)return'Selamat Siang';if(h<18)return'Selamat Sore';return'Selamat Malam';}
+function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+function getUserInitial(){return(state.user.name||state.user.username||'U').trim().charAt(0).toUpperCase();}
+function getAvatarHtml(sizeClass='profile-avatar'){
+  return`<div class="${sizeClass}" style="background:linear-gradient(135deg,${state.user.color||'#e8a838'},${state.user.color||'#e8a838'}99)">${state.user.avatar?`<img src="${state.user.avatar}" alt="Profil">`:getUserInitial()}</div>`;
+}
+function themeVar(name){return getComputedStyle(document.body).getPropertyValue(name).trim();}
+function applyTheme(){
+  document.body.dataset.theme=state.theme==='default'?'':state.theme;
+}
+function setTheme(themeId){
+  state.theme=themeId;applyTheme();saveState();renderPengaturan();
+  if(state.activePage==='dashboard')renderPage(state.activePage);
+  showToast('Tema berhasil diganti','info');
+}
+
+function renderUserPanel(){
+  const panel=document.getElementById('sidebar-user');
+  if(!panel)return;
+  if(!state.user.hasAccount||!state.user.isLoggedIn){
+    panel.innerHTML=`
+      <button class="w-full flex items-center gap-3 text-left" onclick="showLoginModal()">
+        <div class="profile-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent-2))"><i class="fas fa-user"></i></div>
+        <div class="min-w-0">
+          <p class="text-sm font-semibold">${state.user.hasAccount?'Masuk Profil':'Buat Profil'}</p>
+          <p class="text-xs text-muted">${state.user.hasAccount?'Login pengguna':'Kostum profil'}</p>
+        </div>
+      </button>`;
+    return;
+  }
+  panel.innerHTML=`
+    <button class="w-full flex items-center gap-3 text-left" onclick="navigateTo('pengaturan')">
+      ${getAvatarHtml()}
+      <div class="min-w-0">
+          <p class="text-sm font-semibold truncate">${escapeHtml(state.user.name)}</p>
+          <p class="text-xs text-muted truncate">${escapeHtml(state.user.bio||'Personal Space')}</p>
+      </div>
+    </button>`;
+}
+
+function showLoginModal(){
+  pendingProfileAvatar='';
+  if(!state.user.hasAccount){
+    showModal('Buat Profil Pengguna',`
+      <div class="space-y-4">
+        <div><label class="text-xs text-muted mb-1 block">Nama Tampilan</label><input class="input-field" id="m-user-name" placeholder="Contoh: Bonjek"></div>
+        <div><label class="text-xs text-muted mb-1 block">Username</label><input class="input-field" id="m-user-username" placeholder="username login"></div>
+        <div><label class="text-xs text-muted mb-1 block">Password</label><input type="password" class="input-field" id="m-user-password" placeholder="Minimal 4 karakter"></div>
+        <div><label class="text-xs text-muted mb-1 block">Bio Singkat</label><input class="input-field" id="m-user-bio" placeholder="Personal Space" value="Personal Space"></div>
+        <div><label class="text-xs text-muted mb-1 block">Foto Profil</label><input type="file" accept="image/*" class="input-field" onchange="handleProfileAvatarUpload(event)"></div>
+        <div><label class="text-xs text-muted mb-1 block">Warna Avatar</label><input type="color" class="w-full h-10 rounded-lg bg-transparent border border-border cursor-pointer" id="m-user-color" value="#e8a838"></div>
+        <button class="btn-primary w-full mt-2" onclick="createUserAccount()">Buat & Masuk</button>
+      </div>`);
+    return;
+  }
+  showModal('Login Pengguna',`
+    <div class="space-y-4">
+      <div class="profile-panel flex items-center gap-3">
+        ${getAvatarHtml()}
+        <div class="min-w-0">
+          <p class="font-display font-semibold truncate">${escapeHtml(state.user.name||state.user.username)}</p>
+          <p class="text-xs text-muted truncate">@${escapeHtml(state.user.username)}</p>
+        </div>
+      </div>
+      <div><label class="text-xs text-muted mb-1 block">Password</label><input type="password" class="input-field" id="m-login-password" placeholder="Masukkan password" onkeydown="if(event.key==='Enter')loginUser()"></div>
+      <button class="btn-primary w-full mt-2" onclick="loginUser()">Masuk</button>
+    </div>`);
+}
+
+function handleProfileAvatarUpload(event){
+  const file=event.target.files&&event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{pendingProfileAvatar=reader.result;showToast('Foto profil siap disimpan','info');};
+  reader.readAsDataURL(file);
+}
+
+function createUserAccount(){
+  const name=document.getElementById('m-user-name').value.trim();
+  const username=document.getElementById('m-user-username').value.trim();
+  const password=document.getElementById('m-user-password').value;
+  const bio=document.getElementById('m-user-bio').value.trim()||'Personal Space';
+  const color=document.getElementById('m-user-color').value;
+  if(!name){showToast('Nama tampilan wajib diisi','error');return;}
+  if(!username){showToast('Username wajib diisi','error');return;}
+  if(password.length<4){showToast('Password minimal 4 karakter','error');return;}
+  state.user={hasAccount:true,isLoggedIn:true,name,username,password,bio,avatar:pendingProfileAvatar,color};
+  pendingProfileAvatar='';
+  saveState();hideModal();renderUserPanel();renderPage(state.activePage||'dashboard');showToast('Profil berhasil dibuat');
+}
+
+function loginUser(){
+  const password=document.getElementById('m-login-password').value;
+  if(password!==state.user.password){showToast('Password salah','error');return;}
+  state.user.isLoggedIn=true;
+  saveState();hideModal();renderUserPanel();renderPage(state.activePage||'dashboard');showToast('Login berhasil','info');
+}
+
+function logoutUser(){
+  state.user.isLoggedIn=false;
+  saveState();renderUserPanel();renderPengaturan();showToast('Pengguna keluar','info');
+}
+
+function renderProfileSettings(){
+  const wrap=document.getElementById('profile-settings');
+  if(!wrap)return;
+  if(!state.user.hasAccount){
+    wrap.innerHTML=`
+      <div class="profile-panel flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <p class="font-display font-semibold">Belum ada profil pengguna</p>
+          <p class="text-sm text-muted mt-1">Buat profil untuk menampilkan nama dan avatar custom di dashboard.</p>
+        </div>
+        <button class="btn-primary" onclick="showLoginModal()"><i class="fas fa-user-plus mr-2"></i>Buat Profil</button>
+      </div>`;
+    return;
+  }
+  if(!state.user.isLoggedIn){
+    wrap.innerHTML=`
+      <div class="profile-panel flex items-center justify-between gap-4 flex-wrap">
+        <div class="flex items-center gap-3">
+          ${getAvatarHtml()}
+        <div><p class="font-display font-semibold">${escapeHtml(state.user.name||state.user.username)}</p><p class="text-sm text-muted mt-1">Login untuk mengubah profil.</p></div>
+        </div>
+        <button class="btn-primary" onclick="showLoginModal()"><i class="fas fa-right-to-bracket mr-2"></i>Login</button>
+      </div>`;
+    return;
+  }
+  wrap.innerHTML=`
+    <div class="profile-panel">
+      <div class="flex items-center justify-between gap-4 flex-wrap mb-5">
+        <div class="flex items-center gap-3">
+          ${getAvatarHtml()}
+          <div><p class="font-display font-semibold">${escapeHtml(state.user.name)}</p><p class="text-sm text-muted mt-1">@${escapeHtml(state.user.username)}</p></div>
+        </div>
+        <button class="btn-ghost" onclick="logoutUser()"><i class="fas fa-right-from-bracket mr-2"></i>Logout</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><label class="text-xs text-muted mb-1 block">Nama Tampilan</label><input class="input-field" id="profile-name" value="${escapeHtml(state.user.name)}"></div>
+        <div><label class="text-xs text-muted mb-1 block">Username</label><input class="input-field" id="profile-username" value="${escapeHtml(state.user.username)}"></div>
+        <div class="md:col-span-2"><label class="text-xs text-muted mb-1 block">Bio Singkat</label><input class="input-field" id="profile-bio" value="${escapeHtml(state.user.bio||'')}"></div>
+        <div><label class="text-xs text-muted mb-1 block">Foto Profil Baru</label><input type="file" accept="image/*" class="input-field" onchange="handleProfileAvatarUpload(event)"></div>
+        <div><label class="text-xs text-muted mb-1 block">Warna Avatar</label><input type="color" class="w-full h-10 rounded-lg bg-transparent border border-border cursor-pointer" id="profile-color" value="${state.user.color||'#e8a838'}"></div>
+      </div>
+      <div class="flex gap-2 mt-4 flex-wrap">
+        <button class="btn-primary" onclick="saveProfileSettings()"><i class="fas fa-save mr-2"></i>Simpan Profil</button>
+        <button class="btn-ghost" onclick="removeProfileAvatar()"><i class="fas fa-image mr-2"></i>Hapus Foto</button>
+      </div>
+    </div>`;
+}
+
+function saveProfileSettings(){
+  const name=document.getElementById('profile-name').value.trim();
+  const username=document.getElementById('profile-username').value.trim();
+  const bio=document.getElementById('profile-bio').value.trim()||'Personal Space';
+  const color=document.getElementById('profile-color').value;
+  if(!name){showToast('Nama tampilan wajib diisi','error');return;}
+  if(!username){showToast('Username wajib diisi','error');return;}
+  state.user={...state.user,name,username,bio,color,avatar:pendingProfileAvatar||state.user.avatar};
+  pendingProfileAvatar='';
+  saveState();renderUserPanel();renderProfileSettings();if(state.activePage==='dashboard')renderDashboard();showToast('Profil disimpan');
+}
+
+function removeProfileAvatar(){
+  state.user.avatar='';pendingProfileAvatar='';
+  saveState();renderUserPanel();renderProfileSettings();showToast('Foto profil dihapus','info');
+}
+
+/* ================================================================
+   NAVIGATION
+   ================================================================ */
+const PAGE_TITLES={dashboard:'Dashboard',aktivitas:'Aktivitas',todo:'Daily Check-in & To-Do',galeri:'Galeri Foto',folder:'Folder Data',pengaturan:'Pengaturan'};
+
+function navigateTo(page){
+  if(!PAGE_TITLES[page])page='dashboard';
+  state.activePage=page;saveState();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.toggle('active',b.dataset.page===page);});
+  document.getElementById('page-title').textContent=PAGE_TITLES[page]||page;
+  renderPage(page);
+  // Tutup sidebar mobile
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function renderPage(page){
+  // Destroy chart sebelum render ulang
+  Object.keys(charts).forEach(k=>{if(charts[k]){charts[k].destroy();delete charts[k];}});
+  switch(page){
+    case'dashboard':renderDashboard();break;
+    case'aktivitas':renderAktivitas();break;
+    case'todo':renderTodo();break;
+    case'galeri':renderGaleri();break;
+    case'folder':renderFolder();break;
+    case'pengaturan':renderPengaturan();break;
+  }
+}
+
+/* ================================================================
+   TOAST
+   ================================================================ */
+function showToast(msg,type='success'){
+  const t=document.createElement('div');
+  const colors={success:'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',error:'bg-red-500/15 text-red-400 border-red-500/25',info:'bg-amber-500/15 text-amber-400 border-amber-500/25'};
+  const icons={success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-info-circle'};
+  t.className=`toast border ${colors[type]||colors.info}`;
+  t.innerHTML=`<i class="fas ${icons[type]||icons.info}"></i>${msg}`;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),300);},3000);
+}
+
+/* ================================================================
+   MODAL
+   ================================================================ */
+function showModal(title,html){document.getElementById('modal-title').textContent=title;document.getElementById('modal-content').innerHTML=html;document.getElementById('modal-overlay').classList.add('show');}
+function hideModal(){document.getElementById('modal-overlay').classList.remove('show');}
+
+/* ================================================================
+   DASHBOARD
+   ================================================================ */
+function calcProductivity(){
+  const todayTodos=state.todos.filter(t=>t.date===TODAY);
+  const total=todayTodos.length;const done=todayTodos.filter(t=>t.completed).length;
+  const todoScore=total>0?done/total:0;
+  const todayActs=state.activities.filter(a=>a.date===TODAY).length;
+  const actScore=Math.min(todayActs/3,1);
+  const checkScore=state.checkInDates.includes(TODAY)?1:0;
+  return Math.round(checkScore*25+todoScore*50+actScore*25);
+}
+
+function prodLabel(s){if(s>=75)return'Very Productive';if(s>=50)return'Productive';if(s>=25)return'Neutral';return'Distracted';}
+function prodColor(s){if(s>=75)return'#34d399';if(s>=50)return'#e8a838';if(s>=25)return'#fbbf24';return'#f87171';}
+
+function renderDashboard(){
+  // Greeting
+  const d=new Date();
+  const userName=state.user.isLoggedIn&&state.user.name?', '+escapeHtml(state.user.name):'';
+  document.getElementById('dash-greeting').innerHTML=`<h2 class="font-display font-bold text-2xl">${getGreeting()}${userName}!</h2><p class="text-sm text-muted mt-1">${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}</p>`;
+
+  // Stats
+  const todayTodos=state.todos.filter(t=>t.date===TODAY);
+  const doneTodos=todayTodos.filter(t=>t.completed).length;
+  const stats=[
+    {label:'Total Aktivitas',value:state.activities.length,icon:'fa-bolt',color:'#e8a838',bg:'rgba(232,168,56,0.12)'},
+    {label:'To-Do Selesai',value:`${doneTodos}/${todayTodos.length}`,icon:'fa-check-circle',color:'#34d399',bg:'rgba(52,211,153,0.12)'},
+    {label:'Foto di Galeri',value:state.photos.length,icon:'fa-images',color:'#60a5fa',bg:'rgba(96,165,250,0.12)'},
+    {label:'Folder Data',value:state.folders.length,icon:'fa-folder',color:'#c084fc',bg:'rgba(192,132,252,0.12)'},
+  ];
+  document.getElementById('dash-stats').innerHTML=stats.map(s=>`
+    <div class="stat-card"><div class="stat-card" style="position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;filter:blur(40px);opacity:.15;background:${s.color};pointer-events:none;border:none;padding:0"></div>
+    <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:${s.bg}"><i class="fas ${s.icon}" style="color:${s.color}"></i></div><span class="text-xs text-muted font-medium">${s.label}</span></div>
+    <p class="font-display font-bold text-xl">${s.value}</p></div>`).join('');
+
+  // Produktivitas
+  const prod=calcProductivity();
+  document.getElementById('prod-pct').textContent=prod+'%';
+  document.getElementById('prod-pct').style.color=prodColor(prod);
+  document.getElementById('prod-label').textContent=prodLabel(prod);
+
+  const ctx1=document.getElementById('chart-prod').getContext('2d');
+  charts.prod=new Chart(ctx1,{type:'doughnut',data:{datasets:[{data:[prod,100-prod],backgroundColor:[prodColor(prod),themeVar('--grid')],borderWidth:0,hoverOffset:4}]},options:{cutout:'78%',responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+
+  // Update weekly data (hari ini)
+  state.weeklyActivityCounts[6]=state.activities.filter(a=>a.date===TODAY).length;
+  const ctx2=document.getElementById('chart-weekly').getContext('2d');
+  const last7=[];
+  for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);last7.push(DAY_NAMES[d.getDay()]);}
+  charts.weekly=new Chart(ctx2,{type:'bar',data:{labels:last7,datasets:[{label:'Aktivitas',data:state.weeklyActivityCounts,backgroundColor:themeVar('--accent-dim'),borderColor:themeVar('--accent'),borderWidth:1,borderRadius:6,barThickness:24}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false},ticks:{color:themeVar('--muted'),font:{size:11}}},y:{grid:{color:themeVar('--grid')},ticks:{color:themeVar('--muted'),font:{size:11},stepSize:1},beginAtZero:true}},plugins:{legend:{display:false}}}});
+
+  // Todo preview
+  const previewTodos=todayTodos.slice(0,4);
+  document.getElementById('dash-todo-preview').innerHTML=previewTodos.length?previewTodos.map(t=>`
+    <div class="flex items-center gap-3 py-2 px-3 rounded-lg ${t.completed?'opacity-50':''}">
+      <div class="custom-check ${t.completed?'checked':''}" style="width:16px;height:16px;border-radius:4px;font-size:8px"></div>
+      <span class="text-sm ${t.completed?'line-through text-muted':''}">${t.text}</span>
+    </div>`).join(''):'<p class="text-sm text-muted">Tidak ada tugas hari ini</p>';
+
+  // Recent activities
+  const recentActs=state.activities.slice(-4).reverse();
+  document.getElementById('dash-recent-act').innerHTML=recentActs.length?recentActs.map(a=>{
+    const cat=CATEGORIES[a.category]||CATEGORIES['Lainnya'];
+    return`<div class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/[.02] transition-colors">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:${cat.color}20"><i class="fas ${cat.icon} text-xs" style="color:${cat.color}"></i></div>
+      <div class="flex-1 min-w-0"><p class="text-sm truncate">${a.name}</p><p class="text-xs text-muted">${a.date} · ${a.time}</p></div>
+    </div>`;}).join(''):'<p class="text-sm text-muted">Belum ada aktivitas</p>';
+
+  // Quote
+  const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  document.getElementById('daily-quote').textContent='"'+q.text+'"';
+  document.getElementById('quote-author').textContent='— '+q.author;
+
+}
+
+/* ================================================================
+   AKTIVITAS
+   ================================================================ */
+let actFilter='Semua';
+
+function renderAktivitas(){
+  // Filter buttons
+  const cats=['Semua',...Object.keys(CATEGORIES)];
+  document.getElementById('activity-filters').innerHTML=cats.map(c=>`
+    <button class="text-xs px-3 py-1.5 rounded-lg border transition-all ${actFilter===c?'border-accent text-accent bg-accentdim':'border-border text-muted hover:border-gray-500 hover:text-gray-300'}" onclick="actFilter='${c}';renderAktivitas()">${c}</button>`).join('');
+
+  const filtered=actFilter==='Semua'?state.activities:state.activities.filter(a=>a.category===actFilter);
+  const sorted=[...filtered].sort((a,b)=>b.date.localeCompare(a.date)||b.time.localeCompare(a.time));
+
+  document.getElementById('activity-list').innerHTML=sorted.map(a=>{
+    const cat=CATEGORIES[a.category]||CATEGORIES['Lainnya'];
+    return`<div class="card p-4 flex items-center gap-4 group" style="animation:slideIn .3s ease">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${cat.color}18"><i class="fas ${cat.icon}" style="color:${cat.color}"></i></div>
+      <div class="flex-1 min-w-0"><p class="font-medium text-sm">${a.name}</p><p class="text-xs text-muted mt-0.5"><span class="inline-block px-2 py-0.5 rounded-md text-xs" style="background:${cat.color}15;color:${cat.color}">${a.category}</span> · ${a.date} · ${a.time}</p></div>
+      <button class="text-muted hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100" onclick="deleteActivity(${a.id})"><i class="fas fa-trash-alt text-sm"></i></button>
+    </div>`;}).join('');
+
+  document.getElementById('activity-list').classList.toggle('hidden',!sorted.length);
+  document.getElementById('activity-empty').classList.toggle('hidden',sorted.length>0);
+}
+
+function showAddActivityModal(){
+  const catOpts=Object.keys(CATEGORIES).map(c=>`<option value="${c}">${c}</option>`).join('');
+  showModal('Tambah Aktivitas',`
+    <div class="space-y-4">
+      <div><label class="text-xs text-muted mb-1 block">Nama Aktivitas</label><input class="input-field" id="m-act-name" placeholder="Contoh: Olahraga pagi"></div>
+      <div><label class="text-xs text-muted mb-1 block">Kategori</label><select class="input-field" id="m-act-cat">${catOpts}</select></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs text-muted mb-1 block">Tanggal</label><input type="date" class="input-field" id="m-act-date" value="${TODAY}"></div>
+        <div><label class="text-xs text-muted mb-1 block">Waktu</label><input type="time" class="input-field" id="m-act-time" value="${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}"></div>
+      </div>
+      <button class="btn-primary w-full mt-2" onclick="addActivity()">Simpan Aktivitas</button>
+    </div>`);
+}
+
+function addActivity(){
+  const name=document.getElementById('m-act-name').value.trim();
+  if(!name){showToast('Nama aktivitas wajib diisi','error');return;}
+  state.activities.push({id:nextId(state.activities),name,category:document.getElementById('m-act-cat').value,date:document.getElementById('m-act-date').value||TODAY,time:document.getElementById('m-act-time').value||'00:00'});
+  saveState();hideModal();renderAktivitas();showToast('Aktivitas berhasil ditambahkan');
+}
+function deleteActivity(id){state.activities=state.activities.filter(a=>a.id!==id);saveState();renderAktivitas();showToast('Aktivitas dihapus','info');}
+
+/* ================================================================
+   TO-DO & CHECK-IN
+   ================================================================ */
+let todoFilter='semua';
+
+function calcStreak(){
+  let streak=0;const d=new Date();
+  for(let i=0;i<365;i++){
+    const ds=new Date(d);ds.setDate(ds.getDate()-i);const s=ds.toISOString().slice(0,10);
+    if(state.checkInDates.includes(s))streak++;else if(i>0)break;else return 0;
+  }
+  return streak;
+}
+
+function renderTodo(){
+  const checkedToday=state.checkInDates.includes(TODAY);
+  const btn=document.getElementById('checkin-btn');
+  if(checkedToday){btn.classList.remove('pulse-btn','border-dashed','border-accent','text-accent');btn.classList.add('border-solid','border-emerald-500','text-emerald-400','bg-emerald-500/10');btn.innerHTML='<i class="fas fa-check"></i>';}
+  else{btn.classList.add('pulse-btn','border-dashed','border-accent','text-accent');btn.classList.remove('border-solid','border-emerald-500','text-emerald-400','bg-emerald-500/10');btn.innerHTML='<i class="fas fa-sun"></i>';}
+  document.getElementById('checkin-status').textContent=checkedToday?'Sudah check-in hari ini':'Belum check-in hari ini';
+  document.getElementById('streak-count').textContent=calcStreak();
+  document.getElementById('total-checkins').textContent=state.checkInDates.length;
+
+  // Filters
+  const filters=[{k:'semua',l:'Semua'},{k:'active',l:'Belum Selesai'},{k:'done',l:'Selesai'},{k:'high',l:'Prioritas Tinggi'}];
+  document.getElementById('todo-filters').innerHTML=filters.map(f=>`
+    <button class="text-xs px-3 py-1.5 rounded-lg border transition-all ${todoFilter===f.k?'border-accent text-accent bg-accentdim':'border-border text-muted hover:border-gray-500'}" onclick="todoFilter='${f.k}';renderTodo()">${f.l}</button>`).join('');
+
+  let filtered=state.todos.filter(t=>t.date===TODAY);
+  if(todoFilter==='active')filtered=filtered.filter(t=>!t.completed);
+  else if(todoFilter==='done')filtered=filtered.filter(t=>t.completed);
+  else if(todoFilter==='high')filtered=filtered.filter(t=>t.priority==='high');
+
+  document.getElementById('todo-list').innerHTML=filtered.map(t=>`
+    <div class="todo-item priority-${t.priority} ${t.completed?'done':''}">
+      <div class="custom-check ${t.completed?'checked':''}" onclick="toggleTodo(${t.id})"></div>
+      <span class="todo-text flex-1 text-sm">${t.text}</span>
+      <span class="text-xs px-2 py-0.5 rounded-md ${t.priority==='high'?'bg-red-500/15 text-red-400':t.priority==='medium'?'bg-amber-500/15 text-amber-400':'bg-emerald-500/15 text-emerald-400'}">${t.priority==='high'?'Tinggi':t.priority==='medium'?'Sedang':'Rendah'}</span>
+      <button class="text-muted hover:text-red-400 transition-colors ml-1" onclick="deleteTodo(${t.id})"><i class="fas fa-trash-alt text-xs"></i></button>
+    </div>`).join('');
+
+  document.getElementById('todo-list').classList.toggle('hidden',!filtered.length);
+  document.getElementById('todo-empty').classList.toggle('hidden',filtered.length>0);
+}
+
+function doCheckIn(){
+  if(state.checkInDates.includes(TODAY)){showToast('Sudah check-in hari ini','info');return;}
+  state.checkInDates.push(TODAY);saveState();renderTodo();showToast('Check-in berhasil! Semangat!');
+}
+function toggleTodo(id){const t=state.todos.find(t=>t.id===id);if(t){t.completed=!t.completed;saveState();renderTodo();}}
+function deleteTodo(id){state.todos=state.todos.filter(t=>t.id!==id);saveState();renderTodo();showToast('Tugas dihapus','info');}
+
+function showAddTodoModal(){
+  showModal('Tambah Tugas',`
+    <div class="space-y-4">
+      <div><label class="text-xs text-muted mb-1 block">Nama Tugas</label><input class="input-field" id="m-todo-text" placeholder="Contoh: Review kode"></div>
+      <div><label class="text-xs text-muted mb-1 block">Prioritas</label><select class="input-field" id="m-todo-pri"><option value="high">Tinggi</option><option value="medium" selected>Sedang</option><option value="low">Rendah</option></select></div>
+      <div><label class="text-xs text-muted mb-1 block">Tanggal</label><input type="date" class="input-field" id="m-todo-date" value="${TODAY}"></div>
+      <button class="btn-primary w-full mt-2" onclick="addTodo()">Simpan Tugas</button>
+    </div>`);
+}
+function addTodo(){
+  const text=document.getElementById('m-todo-text').value.trim();
+  if(!text){showToast('Nama tugas wajib diisi','error');return;}
+  state.todos.push({id:nextId(state.todos),text,priority:document.getElementById('m-todo-pri').value,completed:false,date:document.getElementById('m-todo-date').value||TODAY});
+  saveState();hideModal();renderTodo();showToast('Tugas berhasil ditambahkan');
+}
+
+/* ================================================================
+   GALERI
+   ================================================================ */
+function renderGaleri(){
+  const grid=document.getElementById('gallery-grid');
+  grid.innerHTML=state.photos.map(p=>`
+    <div class="gallery-item" onclick="openLightbox('${p.src}')">
+      <img src="${p.src}" alt="${p.name}" loading="lazy">
+      <div class="overlay"><div class="w-full flex justify-between items-end"><span class="text-xs text-white truncate">${p.name}</span><button class="text-red-400 hover:text-red-300" onclick="event.stopPropagation();deletePhoto(${p.id})"><i class="fas fa-trash-alt"></i></button></div></div>
+    </div>`).join('');
+
+  grid.classList.toggle('hidden',!state.photos.length);
+  document.getElementById('gallery-empty').classList.toggle('hidden',state.photos.length>0);
+}
+
+function handlePhotoUpload(e){
+  const files=e.target.files;if(!files.length)return;
+  Array.from(files).forEach(file=>{
+    if(!file.type.startsWith('image/'))return;
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      const img=new Image();
+      img.onload=function(){
+        const canvas=document.createElement('canvas');
+        const maxW=600;const ratio=Math.min(maxW/img.width,maxW/img.height,1);
+        canvas.width=img.width*ratio;canvas.height=img.height*ratio;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        const src=canvas.toDataURL('image/jpeg',0.7);
+        state.photos.push({id:nextId(state.photos),name:file.name,src,date:TODAY});
+        saveState();renderGaleri();
+      };
+      img.src=ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value='';showToast('Foto berhasil diupload');
+}
+function deletePhoto(id){state.photos=state.photos.filter(p=>p.id!==id);saveState();renderGaleri();showToast('Foto dihapus','info');}
+function openLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.add('show');}
+
+/* ================================================================
+   FOLDER
+   ================================================================ */
+let openFolderId=null;
+
+function renderFolder(){
+  if(openFolderId!==null){renderFolderDetail();return;}
+  document.getElementById('folder-list-view').classList.remove('hidden');
+  document.getElementById('folder-detail-view').classList.add('hidden');
+
+  document.getElementById('folder-grid').innerHTML=state.folders.map(f=>`
+    <div class="folder-card" onclick="openFolder(${f.id})">
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background:${f.color}18"><i class="fas fa-folder text-xl" style="color:${f.color}"></i></div>
+      <p class="font-display font-semibold">${f.name}</p>
+      <p class="text-xs text-muted mt-1">${f.items.length} item</p>
+      <button class="absolute top-4 right-4 text-muted hover:text-red-400 transition-colors" onclick="event.stopPropagation();deleteFolder(${f.id})"><i class="fas fa-trash-alt text-sm"></i></button>
+    </div>`).join('');
+
+  document.getElementById('folder-grid').classList.toggle('hidden',!state.folders.length);
+  document.getElementById('folder-empty').classList.toggle('hidden',state.folders.length>0);
+}
+
+function openFolder(id){openFolderId=id;renderFolder();}
+function closeFolderDetail(){openFolderId=null;renderFolder();}
+
+function renderFolderDetail(){
+  const f=state.folders.find(x=>x.id===openFolderId);if(!f)return;
+  document.getElementById('folder-list-view').classList.add('hidden');
+  document.getElementById('folder-detail-view').classList.remove('hidden');
+  document.getElementById('folder-detail-icon').style.background=f.color+'18';
+  document.getElementById('folder-detail-icon').style.color=f.color;
+  document.getElementById('folder-detail-name').textContent=f.name;
+  document.getElementById('folder-detail-count').textContent=f.items.length+' item tersimpan';
+
+  document.getElementById('folder-items-list').innerHTML=f.items.map(item=>`
+    <div class="card p-4 flex items-center gap-4 group">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${item.type==='link'?'bg-blue-500/15 text-blue-400':'bg-amber-500/15 text-amber-400'}">
+        <i class="fas ${item.type==='link'?'fa-link':'fa-file-alt'}"></i>
+      </div>
+      <div class="flex-1 min-w-0"><p class="font-medium text-sm">${item.title}</p><p class="text-xs text-muted mt-0.5 truncate">${item.content}</p><p class="text-xs text-muted mt-0.5">${item.date}</p></div>
+      <button class="text-muted hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100" onclick="deleteFolderItem(${f.id},${item.id})"><i class="fas fa-trash-alt text-sm"></i></button>
+    </div>`).join('');
+
+  document.getElementById('folder-items-list').classList.toggle('hidden',!f.items.length);
+  document.getElementById('folder-items-empty').classList.toggle('hidden',f.items.length>0);
+}
+
+function showAddFolderModal(){
+  const colors=['#e8a838','#34d399','#60a5fa','#c084fc','#f472b6','#f87171','#fbbf24','#22d3ee'];
+  showModal('Buat Folder Baru',`
+    <div class="space-y-4">
+      <div><label class="text-xs text-muted mb-1 block">Nama Folder</label><input class="input-field" id="m-folder-name" placeholder="Contoh: Catatan Kuliah"></div>
+      <div><label class="text-xs text-muted mb-1 block">Warna</label><div class="flex gap-2 flex-wrap">${colors.map((c,i)=>`<div class="w-8 h-8 rounded-lg cursor-pointer border-2 transition-all hover:scale-110 folder-color-pick ${i===0?'border-white':'border-transparent'}" style="background:${c}" data-color="${c}" onclick="document.querySelectorAll('.folder-color-pick').forEach(e=>e.classList.replace('border-white','border-transparent'));this.classList.replace('border-transparent','border-white');document.getElementById('m-folder-color').value='${c}'"></div>`).join('')}<input type="hidden" id="m-folder-color" value="${colors[0]}"></div></div>
+      <button class="btn-primary w-full mt-2" onclick="addFolder()">Buat Folder</button>
+    </div>`);
+}
+function addFolder(){
+  const name=document.getElementById('m-folder-name').value.trim();
+  if(!name){showToast('Nama folder wajib diisi','error');return;}
+  state.folders.push({id:nextId(state.folders),name,color:document.getElementById('m-folder-color').value,items:[]});
+  saveState();hideModal();renderFolder();showToast('Folder berhasil dibuat');
+}
+function deleteFolder(id){state.folders=state.folders.filter(f=>f.id!==id);if(openFolderId===id)openFolderId=null;saveState();renderFolder();showToast('Folder dihapus','info');}
+
+function showAddFolderItemModal(){
+  const f=state.folders.find(x=>x.id===openFolderId);if(!f)return;
+  showModal('Tambah Item ke "'+f.name+'"',`
+    <div class="space-y-4">
+      <div><label class="text-xs text-muted mb-1 block">Judul</label><input class="input-field" id="m-fi-title" placeholder="Contoh: Password WiFi"></div>
+      <div><label class="text-xs text-muted mb-1 block">Isi / Konten</label><textarea class="input-field" rows="3" id="m-fi-content" placeholder="Isi data penting di sini..."></textarea></div>
+      <div><label class="text-xs text-muted mb-1 block">Tipe</label><select class="input-field" id="m-fi-type"><option value="note">Catatan</option><option value="link">Link</option></select></div>
+      <button class="btn-primary w-full mt-2" onclick="addFolderItem()">Simpan Item</button>
+    </div>`);
+}
+function addFolderItem(){
+  const title=document.getElementById('m-fi-title').value.trim();
+  const content=document.getElementById('m-fi-content').value.trim();
+  if(!title){showToast('Judul wajib diisi','error');return;}
+  const f=state.folders.find(x=>x.id===openFolderId);if(!f)return;
+  f.items.push({id:nextId(f.items),title,content:content||'-',type:document.getElementById('m-fi-type').value,date:TODAY});
+  saveState();hideModal();renderFolderDetail();showToast('Item berhasil ditambahkan');
+}
+function deleteFolderItem(fid,iid){const f=state.folders.find(x=>x.id===fid);if(!f)return;f.items=f.items.filter(i=>i.id!==iid);saveState();renderFolderDetail();showToast('Item dihapus','info');}
+
+/* ================================================================
+   PENGATURAN
+   ================================================================ */
+function renderPengaturan(){
+  renderProfileSettings();
+  document.getElementById('theme-options').innerHTML=THEMES.map(theme=>`
+    <button class="theme-option ${state.theme===theme.id?'active':''}" onclick="setTheme('${theme.id}')">
+      <div class="min-w-0">
+        <p class="font-display font-semibold text-sm">${theme.name}</p>
+        <p class="text-xs text-muted mt-1">${theme.desc}</p>
+      </div>
+      <div class="theme-swatch" aria-hidden="true">${theme.swatch.map(color=>`<span style="background:${color}"></span>`).join('')}</div>
+    </button>`).join('');
+}
+
+/* ================================================================
+   CLOCK
+   ================================================================ */
+function updateClock(){
+  const now=new Date();
+  const h=String(now.getHours()).padStart(2,'0');
+  const m=String(now.getMinutes()).padStart(2,'0');
+  const s=String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('live-clock').textContent=h+':'+m+':'+s;
+  const opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
+  document.getElementById('header-date').textContent=now.toLocaleDateString('id-ID',opts);
+}
+
+/* ================================================================
+   MOBILE RESPONSIVE
+   ================================================================ */
+function checkMobile(){
+  const isMobile=window.innerWidth<=768;
+  document.getElementById('main-content').style.marginLeft=isMobile?'0':'240px';
+  const toggle=document.querySelector('.mobile-toggle');
+  if(toggle)toggle.style.display=isMobile?'flex':'none';
+}
+
+/* ================================================================
+   INIT
+   ================================================================ */
+function init(){
+  loadState();
+  applyTheme();
+  renderUserPanel();
+  // Pastikan weeklyActivityCounts punya 7 elemen
+  while(state.weeklyActivityCounts.length<7)state.weeklyActivityCounts.push(0);
+  state.weeklyActivityCounts=state.weeklyActivityCounts.slice(0,7);
+
+  updateClock();setInterval(updateClock,1000);
+  checkMobile();window.addEventListener('resize',checkMobile);
+
+  // Sidebar nav
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>navigateTo(btn.dataset.page));
+  });
+
+  // Klik di luar sidebar untuk tutup di mobile
+  document.getElementById('main-content').addEventListener('click',()=>{
+    if(window.innerWidth<=768)document.getElementById('sidebar').classList.remove('open');
+  });
+
+  // Render halaman aktif
+  navigateTo(state.activePage||'dashboard');
+}
+
+init();
+</script>
+</body>
+</html>
