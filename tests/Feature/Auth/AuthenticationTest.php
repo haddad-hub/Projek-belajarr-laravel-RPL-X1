@@ -52,7 +52,9 @@ class AuthenticationTest extends TestCase
         $this->get('/admin/login')
             ->assertOk()
             ->assertSee('Sign in admin')
-            ->assertDontSee('Buat akun');
+            ->assertDontSee('Buat akun')
+            ->assertDontSee('Pelanggan')
+            ->assertDontSee('Kurir');
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

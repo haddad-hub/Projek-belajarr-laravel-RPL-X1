@@ -25,14 +25,19 @@
                             <h1 class="text-4xl font-black text-slate-950">Masuk ke layananmu</h1>
                         </div>
                     </div>
-                    <p class="mt-6 max-w-xl text-lg leading-8 text-slate-700">
-                        Akses pelanggan dan kurir tersambung langsung ke aplikasi Bonjek, sementara admin memiliki halaman sign in khusus.
-                    </p>
-                    <div class="mt-8 grid max-w-xl grid-cols-3 gap-3 text-sm font-semibold">
-                        <div class="rounded-xl bg-white/75 p-4 shadow-sm ring-1 ring-white/80">Pelanggan</div>
-                        <div class="rounded-xl bg-white/75 p-4 shadow-sm ring-1 ring-white/80">Kurir</div>
-                        <div class="rounded-xl bg-white/75 p-4 shadow-sm ring-1 ring-white/80">Admin</div>
-                    </div>
+                    @if (request()->routeIs('admin.login'))
+                        <p class="mt-6 max-w-xl text-lg leading-8 text-slate-700">
+                            Kelola operasional dan dashboard Bonjek melalui akses administrator.
+                        </p>
+                    @else
+                        <p class="mt-6 max-w-xl text-lg leading-8 text-slate-700">
+                            Akses pelanggan dan kurir tersambung langsung ke aplikasi Bonjek.
+                        </p>
+                        <div class="mt-8 grid max-w-xl grid-cols-2 gap-3 text-sm font-semibold">
+                            <div class="rounded-xl bg-white/75 p-4 text-center shadow-sm ring-1 ring-white/80">Pelanggan</div>
+                            <div class="rounded-xl bg-white/75 p-4 text-center shadow-sm ring-1 ring-white/80">Kurir</div>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white/90 px-6 py-6 shadow-2xl shadow-pink-200/50 ring-1 ring-white/80 backdrop-blur">
