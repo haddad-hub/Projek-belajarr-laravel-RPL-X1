@@ -20,28 +20,18 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
+     * Display the admin login view.
+     */
+    public function createAdmin(): View
+    {
+        return view('auth.admin-login');
+    }
+
+    /**
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        if ($request->input('role') === 'admin') {
-            $request->validate([
-                'email' => ['required', 'string'],
-                'password' => ['required', 'string'],
-            ]);
-
-            if ($request->input('email') !== 'adminbonjek' || $request->input('password') !== 'admin123') {
-                return back()
-                    ->withInput($request->only('email', 'role'))
-                    ->withErrors(['email' => 'Username atau sandi admin salah.']);
-            }
-
-            $request->session()->regenerate();
-            $request->session()->put('bonjek_admin', true);
-
-            return redirect('/Bonjek/dashboard.html');
-        }
-
         $request->authenticate();
 
         $request->session()->regenerate();
@@ -55,6 +45,28 @@ class AuthenticatedSessionController extends Controller
         }
 
         return redirect()->intended(route('bonjek.launch', absolute: false));
+    }
+
+    /**
+     * Handle the static Bonjek admin credentials.
+     */
+    public function adminStore(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'email' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
+
+        if ($request->input('email') !== 'adminbonjek' || $request->input('password') !== 'admin123') {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Username atau sandi admin salah.']);
+        }
+
+        $request->session()->regenerate();
+        $request->session()->put('bonjek_admin', true);
+
+        return redirect('/Bonjek/dashboard.html');
     }
 
     /**

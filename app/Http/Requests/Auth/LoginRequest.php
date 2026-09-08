@@ -29,8 +29,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role' => ['required', Rule::in(['customer', 'courier', 'admin'])],
-            'email' => ['required', 'string', $this->input('role') === 'admin' ? 'max:255' : 'email'],
+            'role' => ['required', Rule::in(['customer', 'courier'])],
+            'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
         ];
     }

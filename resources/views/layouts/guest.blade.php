@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <p class="mt-6 max-w-xl text-lg leading-8 text-slate-700">
-                        Pilih akses pelanggan, kurir, atau admin. Data akun akan langsung tersambung ke aplikasi dan dashboard Bonjek.
+                        Akses pelanggan dan kurir tersambung langsung ke aplikasi Bonjek, sementara admin memiliki halaman sign in khusus.
                     </p>
                     <div class="mt-8 grid max-w-xl grid-cols-3 gap-3 text-sm font-semibold">
                         <div class="rounded-xl bg-white/75 p-4 shadow-sm ring-1 ring-white/80">Pelanggan</div>

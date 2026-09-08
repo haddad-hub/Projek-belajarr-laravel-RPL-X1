@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="mb-6">
         <p class="text-sm font-bold uppercase tracking-[0.2em] text-pink-600">Login Bonjek</p>
-        <h2 class="mt-2 text-2xl font-black text-slate-950">Pilih akses akun</h2>
-        <p class="mt-2 text-sm text-slate-600">Admin: username <strong>adminbonjek</strong>, sandi <strong>admin123</strong>.</p>
+        <h2 class="mt-2 text-2xl font-black text-slate-950">Masuk pelanggan atau kurir</h2>
+        
     </div>
 
     <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -15,13 +15,12 @@
             <select id="role" name="role" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500">
                 <option value="customer" @selected(old('role') === 'customer')>Pelanggan</option>
                 <option value="courier" @selected(old('role') === 'courier')>Kurir</option>
-                <option value="admin" @selected(old('role') === 'admin')>Admin Dashboard</option>
             </select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label for="email" :value="__('Email / Username Admin')" />
+            <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" class="mt-1 block w-full rounded-xl" type="text" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>

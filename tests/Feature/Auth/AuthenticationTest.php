@@ -33,13 +33,26 @@ class AuthenticationTest extends TestCase
 
     public function test_admin_can_authenticate_using_static_credentials(): void
     {
-        $response = $this->post('/login', [
-            'role' => 'admin',
+        $response = $this->post('/admin/login', [
             'email' => 'adminbonjek',
             'password' => 'admin123',
         ]);
 
         $response->assertRedirect('/Bonjek/dashboard.html');
+    }
+
+    public function test_admin_login_screen_is_separate_from_customer_login(): void
+    {
+        $this->get('/login')
+            ->assertOk()
+            ->assertSee('Pelanggan')
+            ->assertSee('Kurir')
+            ->assertDontSee('Admin Dashboard');
+
+        $this->get('/admin/login')
+            ->assertOk()
+            ->assertSee('Sign in admin')
+            ->assertDontSee('Buat akun');
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
