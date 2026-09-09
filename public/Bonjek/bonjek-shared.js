@@ -33,16 +33,40 @@
   function money(value){return Math.max(0,Number(value||0));}
   function upsertCourier(profile){
     const data=read();
+    const index=data.couriers.findIndex(item=>item.id===(profile.id||'KURIR-UTAMA'));
+    const existing=index>=0?data.couriers[index]:{};
     const courier={
       id:profile.id||'KURIR-UTAMA',
       username:(profile.username||'').trim(),
       name:(profile.name||'Kurir Bonjek').trim(),
       phone:(profile.phone||'').trim(),
       vehicle:(profile.vehicle||'Motor').trim(),
-      photo:profile.photo||''
+      photo:profile.photo||existing.photo||'',
+      isActive:existing.isActive!==false,
+      adminDisabled:existing.adminDisabled===true,
+      attendancePhoto:existing.attendancePhoto||'',
+      attendanceAt:existing.attendanceAt||'',
+      attendanceLocation:existing.attendanceLocation||null
     };
-    const index=data.couriers.findIndex(item=>item.id===courier.id);
     if(index>=0)data.couriers[index]=courier;else data.couriers.push(courier);
+    write(data);
+    return courier;
+  }
+  function setCourierAvailability(courierId,isActive,attendancePhoto,attendanceLocation){
+    const data=read();
+    const courier=data.couriers.find(item=>item.id===courierId);
+    if(!courier||(isActive&&courier.adminDisabled))return null;
+    courier.isActive=Boolean(isActive);
+    if(attendancePhoto){courier.attendancePhoto=attendancePhoto;courier.attendanceAt=new Date().toISOString();courier.attendanceLocation=attendanceLocation||null;}
+    write(data);
+    return courier;
+  }
+  function setCourierAdminDisabled(courierId,disabled){
+    const data=read();
+    let courier=data.couriers.find(item=>item.id===courierId);
+    if(!courier){courier={id:courierId,username:'',name:'Kurir Bonjek',phone:'',vehicle:'Motor',photo:'',isActive:true,adminDisabled:false,attendancePhoto:'',attendanceAt:'',attendanceLocation:null};data.couriers.push(courier);}
+    courier.adminDisabled=Boolean(disabled);
+    courier.isActive=!courier.adminDisabled;
     write(data);
     return courier;
   }
@@ -79,6 +103,7 @@
     const order=data.orders.find(item=>item.id===orderId);
     if(!order||order.status!=='new')return null;
     const savedCourier=upsertCourier(courier||{});
+    if(savedCourier.adminDisabled||savedCourier.isActive===false)return null;
     const fresh=read();
     const target=fresh.orders.find(item=>item.id===orderId);
     if(!target||target.status!=='new')return null;
@@ -167,5 +192,5 @@
       couriers:data.couriers
     };
   }
-  window.BonjekStore={STORAGE_KEY,read,write,createOrder,acceptOrder,completeOrder,confirmOrder,rateOrder,upsertCourier,toAnalyticsPayload};
+  window.BonjekStore={STORAGE_KEY,read,write,createOrder,acceptOrder,completeOrder,confirmOrder,rateOrder,upsertCourier,setCourierAvailability,setCourierAdminDisabled,toAnalyticsPayload};
 })();
