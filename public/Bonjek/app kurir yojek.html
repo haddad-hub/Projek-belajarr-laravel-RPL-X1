@@ -29,6 +29,7 @@
     </nav>
     <div class="side-profile"><button class="nav-btn" data-page="profile" onclick="showPage('profile')"><img class="profile-nav-avatar" id="courierNavPhoto" src="Cokelat Minimalis Kedai Kopi Logo.png" alt="Foto profil kurir"><span class="profile-nav-text"><b class="profile-nav-name" id="courierNavName">Profil</b><small class="profile-nav-role" id="courierNavRole">Belum login</small></span></button></div>
   </aside>
+  <button class="sidebar-toggle" onclick="toggleSidebarCollapsed()" aria-label="Sembunyikan atau tampilkan sidebar" title="Sembunyikan atau tampilkan sidebar"><span class="sidebar-toggle-icon" aria-hidden="true"></span></button>
 
   <main class="main">
     <header class="top"><div><h2 id="pageTitle">Beranda</h2><p id="pageSubtitle">Pantau pekerjaan kurir hari ini.</p></div><span class="status-pill"><i class="fa-solid fa-signal"></i> Data masuk ke dashboard</span></header>
@@ -63,8 +64,6 @@
     </section>
   </main>
 </div>
-<button class="sidebar-toggle" onclick="toggleSidebarCollapsed()" aria-label="Sembunyikan atau tampilkan sidebar" title="Sembunyikan atau tampilkan sidebar"><span class="sidebar-toggle-icon" aria-hidden="true"></span></button>
-
 <nav class="bottom-nav" aria-label="Navigasi kurir mobile">
   <button class="nav-btn active" data-page="home" onclick="showPage('home')"><i class="fa-solid fa-house"></i><span>Beranda</span></button>
   <button class="nav-btn" data-page="attendance" onclick="showPage('attendance')"><i class="fa-solid fa-user-check"></i><span>Absen</span></button>

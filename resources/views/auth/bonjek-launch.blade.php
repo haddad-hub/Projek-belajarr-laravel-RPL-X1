@@ -2,8 +2,8 @@
     $slug = str($user->name)->lower()->replaceMatches('/[^a-z0-9]+/', '-')->trim('-')->toString();
     $username = $slug !== '' ? $slug : 'user-'.$user->id;
     $target = $user->role === 'courier'
-        ? '/Bonjek/app%20kurir%20bonjek.html'
-        : '/Bonjek/app%20pelanggan%20bonjek.html';
+        ? '/Bonjek/app%20kurir%20yojek.html'
+        : '/Bonjek/app%20pelanggan%20yojek.html';
     $profile = [
         'id' => ($user->role === 'courier' ? 'KURIR-' : 'CUST-').strtoupper($username),
         'username' => $username,

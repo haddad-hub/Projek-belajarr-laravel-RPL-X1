@@ -66,7 +66,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         $request->session()->put('bonjek_admin', true);
 
-        return redirect('/Bonjek/dashboard.html');
+        return redirect('/Bonjek/dashboard%20yojek.html');
     }
 
     /**

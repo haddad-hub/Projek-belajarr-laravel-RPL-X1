@@ -45,6 +45,7 @@ body.dark-mode{--bg:#120a10;--surface:#1d111a;--text:#fff7fb;--muted:#c9a9bc;--b
       <p>Data masih kosong dan siap ditautkan langsung melalui kode saat backend Yojek tersedia.</p>
     </div>
   </aside>
+  <button class="sidebar-logo-toggle" id="sidebar-logo-toggle" onclick="toggleSidebarCollapsed()" title="Tampilkan atau sembunyikan sidebar" aria-label="Tampilkan atau sembunyikan sidebar"><span class="sidebar-toggle-icon" aria-hidden="true"></span></button>
   <main>
     <header class="topbar">
       <div><h1 class="font-extrabold text-xl" id="page-title">Overview</h1><p class="text-sm text-[var(--muted)] mt-1">Dashboard analisis jasa pengiriman Yojek Bontang</p></div>
@@ -127,9 +128,6 @@ body.dark-mode{--bg:#120a10;--surface:#1d111a;--text:#fff7fb;--muted:#c9a9bc;--b
     </section>
   </main>
 </div>
-<button class="sidebar-logo-toggle" id="sidebar-logo-toggle" onclick="toggleSidebarCollapsed()" title="Tampilkan atau sembunyikan sidebar" aria-label="Tampilkan atau sembunyikan sidebar">
-  <span class="sidebar-toggle-icon" aria-hidden="true"></span>
-</button>
 <dialog id="courier-deactivate-dialog" class="rounded-2xl border border-[var(--border)] p-0 text-[var(--text)] bg-white shadow-2xl w-[min(92vw,390px)]"><div class="p-6"><h2 class="font-extrabold text-lg">Nonaktifkan kurir?</h2><p class="text-sm text-[var(--muted)] mt-2" id="courier-deactivate-text">Kurir tidak dapat mengaktifkan status atau mengambil order sampai admin mengaktifkannya kembali.</p><div class="flex justify-end gap-3 mt-6"><button class="btn-ghost" onclick="cancelDeactivateCourier()">Tidak</button><button class="btn-primary" onclick="confirmDeactivateCourier()">Nonaktif</button></div></div></dialog>
 <dialog id="courier-attendance-dialog" class="rounded-2xl border border-[var(--border)] p-0 text-[var(--text)] bg-white shadow-2xl w-[min(92vw,440px)]"><div class="p-6"><div class="flex items-start justify-between gap-4"><div><h2 class="font-extrabold text-lg">Bukti Absen Kurir</h2><p class="text-sm text-[var(--muted)] mt-1" id="attendance-proof-date"></p></div><button class="btn-ghost" onclick="document.getElementById('courier-attendance-dialog').close()">Tutup</button></div><img id="attendance-proof-photo" class="hidden w-full max-h-[420px] object-cover rounded-xl mt-4 border border-[var(--border)]" alt="Selfie absen kurir"><p class="text-sm text-[var(--muted)] mt-4" id="attendance-proof-location"></p><a id="attendance-proof-map" class="btn-primary mt-4 hidden" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot"></i>Buka Lokasi di Peta</a></div></dialog>
 <script src="bonjek-shared.js"></script>

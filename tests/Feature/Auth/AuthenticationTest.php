@@ -38,7 +38,7 @@ class AuthenticationTest extends TestCase
             'password' => 'admin123',
         ]);
 
-        $response->assertRedirect('/Bonjek/dashboard.html');
+        $response->assertRedirect('/Bonjek/dashboard%20yojek.html');
     }
 
     public function test_admin_login_screen_is_separate_from_customer_login(): void
