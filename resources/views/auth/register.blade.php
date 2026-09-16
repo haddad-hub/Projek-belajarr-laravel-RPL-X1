@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-6">
-        <p class="text-sm font-bold uppercase tracking-[0.2em] text-pink-600">Register Bonjek</p>
+        <p class="text-sm font-bold uppercase tracking-[0.2em] text-red-600">Register Yojek</p>
         <h2 class="mt-2 text-2xl font-black text-slate-950">Buat akun operasional</h2>
         <p class="mt-2 text-sm text-slate-600">Data ini langsung dipakai sebagai profil di aplikasi pelanggan atau kurir.</p>
     </div>
@@ -10,7 +10,7 @@
 
         <div>
             <x-input-label for="role" :value="__('Daftar sebagai')" />
-            <select id="role" name="role" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500">
+            <select id="role" name="role" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500">
                 <option value="customer" @selected(old('role') === 'customer')>Pelanggan</option>
                 <option value="courier" @selected(old('role') === 'courier')>Kurir</option>
             </select>
@@ -61,11 +61,11 @@
         </div>
 
         <div class="flex items-center justify-between gap-4">
-            <a class="text-sm font-semibold text-pink-700 underline hover:text-pink-900" href="{{ route('login') }}">
+            <a class="text-sm font-semibold text-red-700 underline hover:text-red-900" href="{{ route('login') }}">
                 Sudah punya akun?
             </a>
 
-            <x-primary-button class="rounded-xl bg-slate-950 px-5 py-3 hover:bg-pink-700">
+            <x-primary-button class="rounded-xl bg-red-600 px-5 py-3 hover:bg-red-700">
                 {{ __('Daftar') }}
             </x-primary-button>
         </div>

@@ -20,13 +20,13 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Membuka Bonjek</title>
+        <title>Membuka Yojek</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-screen bg-slate-950 text-white">
         <main class="flex min-h-screen items-center justify-center px-6">
             <div class="text-center">
-                <p class="text-sm font-semibold uppercase tracking-[0.24em] text-pink-300">Bonjek</p>
+                <p class="text-sm font-semibold uppercase tracking-[0.24em] text-red-300">Yojek</p>
                 <h1 class="mt-3 text-2xl font-bold">Menyiapkan akun {{ $user->role === 'courier' ? 'kurir' : 'pelanggan' }}</h1>
                 <p class="mt-2 text-sm text-slate-300">Sebentar, kamu akan diarahkan otomatis.</p>
             </div>

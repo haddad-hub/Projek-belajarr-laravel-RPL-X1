@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bonjek Analytics Dashboard</title>
+<title>Yojek Analytics Dashboard</title>
+<link rel="stylesheet" href="yojek-theme.css">
+<script src="yojek-brand.js" defer></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -29,7 +31,7 @@ body.dark-mode{--bg:#120a10;--surface:#1d111a;--text:#fff7fb;--muted:#c9a9bc;--b
 <button class="mobile-toggle fixed top-4 left-4 z-50 w-10 h-10 rounded-xl bg-white border border-[var(--border)] items-center justify-center text-[var(--accent)]" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
 <div class="shell">
   <aside class="sidebar" id="sidebar">
-    <div class="flex items-center gap-3 mb-8"><div class="brand-mark"><img src="logo.png" alt="Logo Bonjek"></div><div><p class="text-lg font-extrabold leading-tight">Bonjek</p><p class="text-xs text-[var(--muted)] font-bold">Analytics System</p></div></div>
+    <div class="flex items-center gap-3 mb-8"><div class="brand-mark"><img src="Cokelat Minimalis Kedai Kopi Logo.png" alt="Logo Yojek"></div><div><p class="text-lg font-extrabold leading-tight">Yojek</p><p class="text-xs text-[var(--muted)] font-bold">Admin Dashboard</p></div></div>
     <nav class="space-y-1">
       <button class="nav-btn active" data-page="overview"><i class="fa-solid fa-chart-line w-5 text-center"></i><span>Overview</span></button>
       <button class="nav-btn" data-page="kurir"><i class="fa-solid fa-motorcycle w-5 text-center"></i><span>Analisis Kurir</span></button>
@@ -40,12 +42,12 @@ body.dark-mode{--bg:#120a10;--surface:#1d111a;--text:#fff7fb;--muted:#c9a9bc;--b
     <div class="sidebar-panel mt-8"><p class="text-xs font-extrabold text-[var(--muted)] uppercase tracking-wide mb-2">Status Data</p><span class="status-pill"><span class="status-dot" id="sidebar-status-dot"></span><span id="sidebar-status">Belum terhubung</span></span></div>
     <div class="sidebar-note">
       <p class="font-extrabold text-[var(--text)] mb-1">Mode template</p>
-      <p>Data masih kosong dan siap ditautkan langsung melalui kode saat backend Bonjek tersedia.</p>
+      <p>Data masih kosong dan siap ditautkan langsung melalui kode saat backend Yojek tersedia.</p>
     </div>
   </aside>
   <main>
     <header class="topbar">
-      <div><h1 class="font-extrabold text-xl" id="page-title">Overview</h1><p class="text-sm text-[var(--muted)] mt-1">Dashboard analisis jasa pengiriman Bonjek Bontang</p></div>
+      <div><h1 class="font-extrabold text-xl" id="page-title">Overview</h1><p class="text-sm text-[var(--muted)] mt-1">Dashboard analisis jasa pengiriman Yojek Bontang</p></div>
       <div class="flex items-center gap-2 flex-wrap justify-end"><span class="status-pill"><span class="status-dot" id="top-status-dot"></span><span id="top-status">Template kosong</span></span></div>
     </header>
     <section class="page active" id="page-overview">

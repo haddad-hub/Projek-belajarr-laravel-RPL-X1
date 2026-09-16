@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>Bonjek</title>
+        <title>Yojek</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -15,23 +15,23 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-slate-900 antialiased">
-        <div class="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(255,122,184,.24),transparent_30%),linear-gradient(115deg,#fff7ed_0%,#fdf2f8_44%,#eff6ff_100%)] px-4 py-8">
+        <div class="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(252,165,165,.28),transparent_30%),linear-gradient(115deg,#fffafa_0%,#ffffff_44%,#fff1f2_100%)] px-4 py-8">
             <div class="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center justify-center">
                 <div class="hidden flex-1 pr-10 lg:block">
                     <div class="inline-flex items-center gap-3">
-                        <img class="h-14 w-14 rounded-2xl bg-white p-2 shadow-sm" src="/Bonjek/logo.png" alt="Logo Bonjek">
+                        <img class="h-14 w-14 rounded-2xl bg-white p-2 shadow-sm" src="/Bonjek/Cokelat%20Minimalis%20Kedai%20Kopi%20Logo.png" alt="Logo Yojek">
                         <div>
-                            <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-pink-600">Bonjek</p>
+                            <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-red-600">Yojek</p>
                             <h1 class="text-4xl font-black text-slate-950">Masuk ke layananmu</h1>
                         </div>
                     </div>
                     @if (request()->routeIs('admin.login'))
                         <p class="mt-6 max-w-xl text-lg leading-8 text-slate-700">
-                            Kelola operasional dan dashboard Bonjek melalui akses administrator.
+                            Kelola operasional dan dashboard Yojek melalui akses administrator.
                         </p>
                     @else
                         <p class="mt-6 max-w-xl text-lg leading-8 text-slate-700">
-                            Akses pelanggan dan kurir tersambung langsung ke aplikasi Bonjek.
+                            Akses pelanggan dan kurir tersambung langsung ke aplikasi Yojek.
                         </p>
                         <div class="mt-8 grid max-w-xl grid-cols-2 gap-3 text-sm font-semibold">
                             <div class="rounded-xl bg-white/75 p-4 text-center shadow-sm ring-1 ring-white/80">Pelanggan</div>
@@ -40,11 +40,11 @@
                     @endif
                 </div>
 
-                <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white/90 px-6 py-6 shadow-2xl shadow-pink-200/50 ring-1 ring-white/80 backdrop-blur">
+                <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white/90 px-6 py-6 shadow-2xl shadow-red-200/50 ring-1 ring-white/80 backdrop-blur">
                     <div class="mb-6 flex items-center gap-3 lg:hidden">
-                        <img class="h-12 w-12 rounded-2xl bg-white p-2 shadow-sm" src="/Bonjek/logo.png" alt="Logo Bonjek">
+                        <img class="h-12 w-12 rounded-2xl bg-white p-2 shadow-sm" src="/Bonjek/Cokelat%20Minimalis%20Kedai%20Kopi%20Logo.png" alt="Logo Yojek">
                         <div>
-                            <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-pink-600">Bonjek</p>
+                            <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-red-600">Yojek</p>
                             <h1 class="text-xl font-black text-slate-950">Akses Akun</h1>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-6">
-        <p class="text-sm font-bold uppercase tracking-[0.2em] text-pink-600">Login Bonjek</p>
+        <p class="text-sm font-bold uppercase tracking-[0.2em] text-red-600">Login Yojek</p>
         <h2 class="mt-2 text-2xl font-black text-slate-950">Masuk pelanggan atau kurir</h2>
         
     </div>
@@ -12,7 +12,7 @@
 
         <div>
             <x-input-label for="role" :value="__('Masuk sebagai')" />
-            <select id="role" name="role" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500">
+            <select id="role" name="role" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500">
                 <option value="customer" @selected(old('role') === 'customer')>Pelanggan</option>
                 <option value="courier" @selected(old('role') === 'courier')>Kurir</option>
             </select>
@@ -32,16 +32,16 @@
         </div>
 
         <label for="remember_me" class="inline-flex items-center">
-            <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-pink-600 shadow-sm focus:ring-pink-500" name="remember">
+            <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-red-600 shadow-sm focus:ring-red-500" name="remember">
             <span class="ms-2 text-sm text-slate-600">{{ __('Remember me') }}</span>
         </label>
 
         <div class="flex items-center justify-between gap-4">
-            <a class="text-sm font-semibold text-pink-700 underline hover:text-pink-900" href="{{ route('register') }}">
+            <a class="text-sm font-semibold text-red-700 underline hover:text-red-900" href="{{ route('register') }}">
                 Buat akun
             </a>
 
-            <x-primary-button class="rounded-xl bg-slate-950 px-5 py-3 hover:bg-pink-700">
+            <x-primary-button class="rounded-xl bg-red-600 px-5 py-3 hover:bg-red-700">
                 {{ __('Masuk') }}
             </x-primary-button>
         </div>
