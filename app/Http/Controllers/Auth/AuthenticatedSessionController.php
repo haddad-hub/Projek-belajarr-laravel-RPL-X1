@@ -44,11 +44,11 @@ class AuthenticatedSessionController extends Controller
                 ->withErrors(['role' => 'Role akun tidak sesuai dengan pilihan login.']);
         }
 
-        return redirect()->intended(route('bonjek.launch', absolute: false));
+        return redirect()->intended(route('yojek.launch', absolute: false));
     }
 
     /**
-     * Handle the static Bonjek admin credentials.
+     * Handle the static Yojek admin credentials.
      */
     public function adminStore(Request $request): RedirectResponse
     {
@@ -57,16 +57,16 @@ class AuthenticatedSessionController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if ($request->input('email') !== 'adminbonjek' || $request->input('password') !== 'admin123') {
+        if ($request->input('email') !== 'adminyojek' || $request->input('password') !== 'admin123') {
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors(['email' => 'Username atau sandi admin salah.']);
         }
 
         $request->session()->regenerate();
-        $request->session()->put('bonjek_admin', true);
+        $request->session()->put('yojek_admin', true);
 
-        return redirect('/Bonjek/dashboard%20yojek.html');
+        return redirect('/Yojek/dashboard%20yojek.html');
     }
 
     /**
@@ -80,7 +80,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        $request->session()->forget('bonjek_admin');
+        $request->session()->forget('yojek_admin');
 
         return redirect('/');
     }

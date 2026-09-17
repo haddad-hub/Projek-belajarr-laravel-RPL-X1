@@ -28,17 +28,17 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('bonjek.launch', absolute: false));
+        $response->assertRedirect(route('yojek.launch', absolute: false));
     }
 
     public function test_admin_can_authenticate_using_static_credentials(): void
     {
         $response = $this->post('/admin/login', [
-            'email' => 'adminbonjek',
+            'email' => 'adminyojek',
             'password' => 'admin123',
         ]);
 
-        $response->assertRedirect('/Bonjek/dashboard%20yojek.html');
+        $response->assertRedirect('/Yojek/dashboard%20yojek.html');
     }
 
     public function test_admin_login_screen_is_separate_from_customer_login(): void

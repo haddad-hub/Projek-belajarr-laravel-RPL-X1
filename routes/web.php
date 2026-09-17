@@ -13,11 +13,11 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/bonjek-launch', function () {
-    return view('auth.bonjek-launch', [
+Route::get('/yojek-launch', function () {
+    return view('auth.yojek-launch', [
         'user' => request()->user(),
     ]);
-})->middleware('auth')->name('bonjek.launch');
+})->middleware('auth')->name('yojek.launch');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

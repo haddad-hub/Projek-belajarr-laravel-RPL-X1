@@ -53,7 +53,7 @@ In order to ensure that the Laravel community is welcoming to all, please review
 
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## Bonjek MySQL dan API
+## Yojek MySQL dan API
 
 Data akun pelanggan dan kurir disimpan di tabel `users` pada MySQL. Salin `.env.example` menjadi `.env`, lalu sesuaikan `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` dengan server MySQL lokal.
 
@@ -62,7 +62,7 @@ php artisan migrate
 php artisan serve
 ```
 
-API membutuhkan sesi login Bonjek yang aktif:
+API membutuhkan sesi login Yojek yang aktif:
 
 - `GET /api/customers` mengambil daftar pelanggan.
 - `GET /api/customers/{id}` mengambil satu pelanggan.

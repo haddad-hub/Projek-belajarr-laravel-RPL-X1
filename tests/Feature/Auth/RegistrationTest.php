@@ -23,12 +23,12 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'role' => 'customer',
             'phone' => '08123456789',
-            'address' => 'Jalan Bonjek 1',
+            'address' => 'Jalan Yojek 1',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('bonjek.launch', absolute: false));
+        $response->assertRedirect(route('yojek.launch', absolute: false));
     }
 }
