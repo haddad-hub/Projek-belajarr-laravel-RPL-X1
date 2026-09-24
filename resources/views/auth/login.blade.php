@@ -13,8 +13,8 @@
         <div>
             <x-input-label for="role" :value="__('Masuk sebagai')" />
             <select id="role" name="role" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500">
-                <option value="customer" @selected(old('role') === 'customer')>Pelanggan</option>
-                <option value="courier" @selected(old('role') === 'courier')>Kurir</option>
+                <option value="customer" @selected(old('role', $role) === 'customer')>Pelanggan</option>
+                <option value="courier" @selected(old('role', $role) === 'courier')>Kurir</option>
             </select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
         </div>
