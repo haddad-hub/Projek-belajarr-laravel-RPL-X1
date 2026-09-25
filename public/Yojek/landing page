@@ -53,8 +53,8 @@ a{color:inherit;text-decoration:none}
 }
 .site-header .row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:16px}
 .brand{display:flex;align-items:center;gap:11px}
-.brand-mark{width:40px;height:40px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 10px 22px var(--shadow),0 0 0 4px var(--accent-dim)}
-.brand-mark img{width:100%;height:100%;object-fit:contain;padding:4px}
+.brand-mark{width:46px;height:46px;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 12px 26px rgba(222,29,122,.13)}
+.brand-mark img{width:100%;height:100%;object-fit:contain;padding:5px}
 .brand b{font-size:17px;letter-spacing:-.01em}
 .brand span{display:block;font-size:11.5px;font-weight:700;color:var(--muted)}
 .main-nav{display:flex;align-items:center;gap:6px}
@@ -70,7 +70,7 @@ a{color:inherit;text-decoration:none}
 }
 
 /* ---- Hero (single column, centered — no floating mockup) ---- */
-.hero{position:relative;isolation:isolate;min-height:calc(100svh - var(--header-height));padding:clamp(40px,7vh,76px) 0;text-align:center;display:flex;align-items:center;background:url('/Yojek/bg%20primary.png') center 42%/cover no-repeat;color:#fff}
+.hero{position:relative;isolation:isolate;min-height:calc(100svh - var(--header-height));padding:clamp(40px,7vh,76px) 0;text-align:center;display:flex;align-items:center;background:url('/Yojek/bg-primary-optimized.jpg') center 42%/cover no-repeat;color:#fff}
 .hero::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(47,23,23,.7),rgba(47,23,23,.48) 52%,rgba(47,23,23,.62))}
 .hero::after{content:'';position:absolute;right:0;bottom:0;left:0;height:22%;z-index:0;background:linear-gradient(to bottom,rgba(255,250,250,0),rgba(255,250,250,.78) 72%,#fffafa 100%);pointer-events:none}
 .hero-inner{position:relative;z-index:1;max-width:740px;margin:0 auto}
@@ -106,7 +106,7 @@ a{color:inherit;text-decoration:none}
 .section-head{max-width:640px;margin:0 0 clamp(28px,5vh,44px)}
 .section-head h2{font-size:clamp(1.6rem,1.6vw + 1rem,2.15rem);font-weight:800;letter-spacing:-.01em;margin:0 0 12px}
 .section-head p{color:var(--muted);font-size:16px;margin:0}
-.section-alt{background:linear-gradient(135deg,#fffafa 0%,#fff 48%,#fff1f2 100%)}
+.section-alt{background:#fff}
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
 .reveal.is-visible{opacity:1;transform:translateY(0)}
 .steps .reveal:nth-child(2),.features .reveal:nth-child(2){transition-delay:.08s}
@@ -125,6 +125,35 @@ a{color:inherit;text-decoration:none}
   .how-it-works{grid-template-columns:1fr;gap:36px}
   .steps{grid-template-columns:1fr}
   .how-it-works-media,.how-it-works-media img{min-height:340px}
+}
+.fast-delivery{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:#fffafa url('/Yojek/bgyojek%20hal3.png') 24% center/cover no-repeat;
+}
+.fast-delivery::before{
+  content:'';position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(90deg,rgba(255,250,250,.04) 0%,rgba(255,250,250,.12) 28%,rgba(255,250,250,.78) 61%,#fffafa 82%,#fffafa 100%);
+}
+.fast-delivery::after{
+  content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.94) 18px,rgba(255,255,255,0) 82px,rgba(255,255,255,0) calc(100% - 82px),rgba(255,255,255,.94) calc(100% - 18px),#fff 100%);
+}
+.fast-delivery-content{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,.78fr) minmax(420px,1.22fr);align-items:center;min-height:calc(100svh - var(--header-height));}
+.fast-delivery-copy{grid-column:2;max-width:570px;margin-left:auto;padding:42px 0 42px 48px}
+.fast-delivery-copy .eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:16px}
+.fast-delivery-copy h2{max-width:12ch;margin:0 0 16px;font-size:clamp(2.2rem,3.5vw,3.7rem);line-height:1.04;letter-spacing:-.02em;text-shadow:0 2px 12px rgba(255,250,250,.95),0 1px 2px rgba(47,23,23,.18)}
+.fast-delivery-copy > p{max-width:46ch;margin:0 0 28px;color:var(--muted);font-size:17px;line-height:1.7;text-shadow:0 1px 8px rgba(255,250,250,.98),0 1px 2px rgba(255,255,255,.8)}
+.delivery-points{display:grid;gap:14px;max-width:500px}
+.delivery-point{display:grid;grid-template-columns:42px 1fr;gap:14px;align-items:start}
+.delivery-point .ic{width:42px;height:42px;border-radius:12px;background:#fff;color:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(185,28,28,.1)}
+.delivery-point h3{margin:0 0 3px;font-size:16px;text-shadow:0 1px 8px rgba(255,250,250,.98),0 1px 2px rgba(255,255,255,.8)}
+.delivery-point p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;text-shadow:0 1px 7px rgba(255,250,250,.98),0 1px 2px rgba(255,255,255,.8)}
+@media(max-width:860px){
+  .fast-delivery{background-position:center top;background-size:auto 58%;background-color:#fffafa;background-repeat:no-repeat}
+  .fast-delivery::before{background:linear-gradient(180deg,rgba(255,250,250,.02) 0%,rgba(255,250,250,.08) 28%,#fffafa 54%,#fffafa 100%)}
+  .fast-delivery-content{display:block;min-height:auto;padding-top:clamp(300px,58vw,440px)}
+  .fast-delivery-copy{max-width:none;margin:0;padding:48px 0 16px}
+  .fast-delivery-copy h2{max-width:16ch}
 }
 .step{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 26px;display:grid;grid-template-columns:48px 1fr;column-gap:18px;align-items:start;transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
 .step:hover{border-color:var(--border-strong);transform:translateY(-3px);box-shadow:0 16px 32px rgba(74,20,20,.08)}
@@ -164,6 +193,26 @@ a{color:inherit;text-decoration:none}
 .feature.wide .ic{margin-bottom:0}
 .feature.wide h3{margin:0 0 4px}
 
+/* ---- Cerita perjalanan ---- */
+.journey-section{position:relative;display:block;overflow:hidden;margin-top:-28px;padding-top:calc(clamp(64px,9vh,104px) + 28px);padding-bottom:clamp(64px,9vh,104px);background:linear-gradient(180deg,#fff 0%,#fff 12%,#fff5f5 24%,#fee2e2 38%,#fecaca 53%,#fca5a5 68%,#fecaca 84%,#fff1f2 95%,#fff 100%)}
+.journey-section::before{content:'';position:absolute;top:-40px;left:50%;z-index:0;width:100vw;height:150px;transform:translateX(-50%);pointer-events:none;background:linear-gradient(180deg,#fff 0%,#fff 28%,rgba(255,255,255,.92) 52%,rgba(255,255,255,.48) 76%,rgba(255,255,255,0) 100%)}
+.journey-head{position:relative;z-index:1;max-width:620px;margin:0 auto clamp(34px,5vh,52px);text-align:center}
+.journey-head h2{margin:0 0 12px;font-size:clamp(1.7rem,1.8vw + 1rem,2.4rem);font-weight:800;letter-spacing:-.01em}
+.journey-head p{margin:0;color:var(--muted);font-size:16px}
+.journey-viewport{position:relative;z-index:1;overflow-x:auto;overflow-y:hidden;padding:14px calc((100vw - min(68vw,760px)) / 2) 30px;cursor:grab;scroll-snap-type:x mandatory;scrollbar-color:var(--accent-light) transparent;scrollbar-width:thin;user-select:none}
+.journey-viewport.is-dragging{cursor:grabbing;scroll-snap-type:none}
+.journey-track{display:flex;align-items:center;gap:28px;width:max-content}
+.journey-card{width:min(68vw,760px);margin:0;scroll-snap-align:center;flex:0 0 auto;transition:transform .55s cubic-bezier(.2,.75,.25,1),opacity .55s ease,filter .55s ease}
+.journey-card img{width:100%;aspect-ratio:1.45;object-fit:cover;border-radius:var(--radius-lg);box-shadow:0 24px 58px rgba(127,29,29,.2);pointer-events:none;filter:grayscale(72%);opacity:.42;transition:filter .55s ease,opacity .55s ease,box-shadow .55s ease}
+.journey-card:not(.is-active){transform:scale(.88)}
+.journey-card.is-active{transform:scale(1);z-index:1}
+.journey-card.is-active img{filter:grayscale(0);opacity:1;box-shadow:0 28px 64px rgba(127,29,29,.28)}
+.journey-card figcaption{padding:14px 4px 0;color:var(--muted);font-size:14px;font-weight:700}
+@media(max-width:640px){
+  .journey-viewport{padding-right:calc((100vw - 86vw) / 2);padding-left:calc((100vw - 86vw) / 2)}
+  .journey-card{width:86vw}
+}
+
 /* ---- CTA band ---- */
 .cta-band{
   background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 56%,var(--accent-light) 100%);
@@ -175,7 +224,7 @@ a{color:inherit;text-decoration:none}
 .cta-band .hero-ctas{justify-content:center;margin-bottom:0}
 .cta-band .btn-primary{background:#b91c1c;color:#fff;box-shadow:none}
 .cta-band .btn-primary:hover{filter:none;background:#991b1b}
-.cta-section{min-height:calc(82svh - var(--header-height));background:linear-gradient(120deg,#fff 0%,#fff5f5 52%,#fee2e2 100%)}
+.cta-section{min-height:calc(82svh - var(--header-height));background:#fffafa}
 
 /* ---- Footer ---- */
 .site-footer{border-top:1px solid rgba(255,255,255,.18);padding:52px 0 28px;background:linear-gradient(125deg,#b91c1c 0%,#7f1d1d 56%,#252525 100%);color:#fff}
@@ -248,7 +297,7 @@ dialog#loginModal::backdrop{background:rgba(47,23,23,.42)}
 <header class="site-header">
   <div class="wrap row">
     <div class="brand">
-      <div class="brand-mark"><img src="/Yojek/yojek-logo.svg" alt="Logo Yojek"></div>
+      <div class="brand-mark"><img src="/Yojek/Cokelat%20Minimalis%20Kedai%20Kopi%20Logo.png" alt="Logo Yojek"></div>
       <div><b>Yojek</b><span>Antar &amp; jemput Bontang</span></div>
     </div>
     <nav class="main-nav" aria-label="Navigasi utama">
@@ -291,7 +340,7 @@ dialog#loginModal::backdrop{background:rgba(47,23,23,.42)}
       </div>
       <div class="hero-route" aria-hidden="true">
         <div class="track"><div class="dot"></div></div>
-        <div class="labels"><span>Toko</span><span>Rumahmu</span></div>
+        <div class="labels"><span>Warung</span><span>Rumahmu</span></div>
       </div>
     </div>
   </section>
@@ -323,8 +372,32 @@ dialog#loginModal::backdrop{background:rgba(47,23,23,.42)}
           </div>
         </div>
         <figure class="how-it-works-media reveal">
-          <img src="/Yojek/kurir%20memberi%20pesanan.png" alt="Kurir Yojek memberikan pesanan kepada pelanggan">
+          <img src="/Yojek/kurir-memberi-pesanan-optimized.jpg" alt="Kurir Yojek memberikan pesanan kepada pelanggan">
         </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section fast-delivery reveal" aria-labelledby="fast-delivery-title">
+    <div class="wrap fast-delivery-content">
+      <div class="fast-delivery-copy">
+        <span class="eyebrow"><svg class="icon"><use href="#i-bike"/></svg> Antar lebih cepat</span>
+        <h2 id="fast-delivery-title">Siap mengantar dengan cepat ke rumah Anda</h2>
+        <p>Pesanan tidak perlu menunggu lama. Yojek menghubungkan Anda dengan kurir terdekat agar makanan atau barang segera bergerak dari lokasi ambil menuju rumah.</p>
+        <div class="delivery-points">
+          <div class="delivery-point">
+            <span class="ic"><svg class="icon"><use href="#i-target"/></svg></span>
+            <div><h3>Kurir terdekat bergerak lebih dulu</h3><p>Pesanan langsung diarahkan ke kurir yang berada di sekitar lokasi pengambilan.</p></div>
+          </div>
+          <div class="delivery-point">
+            <span class="ic"><svg class="icon"><use href="#i-history"/></svg></span>
+            <div><h3>Status selalu bisa dipantau</h3><p>Lihat perjalanan pesanan secara realtime sampai tiba di depan pintu.</p></div>
+          </div>
+          <div class="delivery-point">
+            <span class="ic"><svg class="icon"><use href="#i-pin"/></svg></span>
+            <div><h3>Jangkauan pengantaran di Bontang</h3><p>Temukan warung dan tujuan di sekitar kota dalam satu pengalaman pemesanan.</p></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -360,6 +433,29 @@ dialog#loginModal::backdrop{background:rgba(47,23,23,.42)}
     </div>
   </section>
 
+  <section class="journey-section reveal" aria-labelledby="journey-title">
+    <div class="journey-head">
+      <h2 id="journey-title">Lebih dekat dengan perjalanan Yojek</h2>
+      <p>Dari jalanan Bontang sampai pesanan tiba, kami siap menemani setiap perjalanan.</p>
+    </div>
+    <div class="journey-viewport" id="journeyViewport" aria-label="Galeri perjalanan Yojek" tabindex="0">
+      <div class="journey-track">
+        <figure class="journey-card">
+          <img src="/Yojek/kurir%20yojek%20mengantar%20barang%20v2.png" alt="Kurir Yojek mengantarkan barang">
+          <figcaption>Barang sampai tanpa perlu keluar rumah.</figcaption>
+        </figure>
+        <figure class="journey-card">
+          <img src="/Yojek/kurir%20yojek%20mengantar%20pulang.png" alt="Kurir Yojek mengantar pelanggan pulang">
+          <figcaption>Perjalanan pulang terasa lebih tenang.</figcaption>
+        </figure>
+        <figure class="journey-card">
+          <img src="/Yojek/ChatGPT%20Image%2025%20Sep%202026%2C%2008.17.13.png" alt="Pengalaman menggunakan layanan Yojek">
+          <figcaption>Semua kebutuhan bergerak bersama Yojek.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
   <section class="section cta-section reveal">
     <div class="wrap">
       <div class="cta-band reveal">
@@ -378,7 +474,7 @@ dialog#loginModal::backdrop{background:rgba(47,23,23,.42)}
     <div class="footer-grid">
       <div>
         <div class="brand" style="margin-bottom:12px">
-          <div class="brand-mark"><img src="/Yojek/yojek-logo.svg" alt="Logo Yojek"></div>
+          <div class="brand-mark"><img src="/Yojek/Cokelat%20Minimalis%20Kedai%20Kopi%20Logo.png" alt="Logo Yojek"></div>
           <div><b>Yojek</b></div>
         </div>
         <p style="color:var(--muted);font-size:14px;max-width:32ch;margin:0">Pesan makanan atau barang di Bontang, kurir kami yang antar.</p>
@@ -411,9 +507,7 @@ dialog#loginModal::backdrop{background:rgba(47,23,23,.42)}
 const revealItems=document.querySelectorAll('.reveal');
 const revealObserver=new IntersectionObserver((entries,observer)=>{
   entries.forEach(entry=>{
-    if(!entry.isIntersecting)return;
-    entry.target.classList.add('is-visible');
-    observer.unobserve(entry.target);
+    entry.target.classList.toggle('is-visible',entry.isIntersecting);
   });
 },{threshold:.14,rootMargin:'0px 0px -40px'});
 revealItems.forEach(item=>revealObserver.observe(item));
@@ -423,6 +517,61 @@ document.getElementById('menuToggle').addEventListener('click',()=>mobileNav.cla
 document.getElementById('mobileNavClose').addEventListener('click',()=>mobileNav.classList.remove('open'));
 mobileNav.addEventListener('click',e=>{if(e.target===mobileNav)mobileNav.classList.remove('open');});
 document.querySelectorAll('#mobileNav a').forEach(a=>a.addEventListener('click',()=>mobileNav.classList.remove('open')));
+
+const journeyViewport=document.getElementById('journeyViewport');
+const journeyCards=[...journeyViewport.querySelectorAll('.journey-card')];
+let journeyDragging=false;
+let journeyStartX=0;
+let journeyStartScroll=0;
+let journeyFrame=0;
+const updateJourneyActive=()=>{
+  const viewportCenter=journeyViewport.getBoundingClientRect().left+journeyViewport.clientWidth/2;
+  let closestCard=null;
+  let closestDistance=Infinity;
+  journeyCards.forEach(card=>{
+    const box=card.getBoundingClientRect();
+    const distance=Math.abs(box.left+box.width/2-viewportCenter);
+    if(distance<closestDistance){closestDistance=distance;closestCard=card;}
+  });
+  journeyCards.forEach(card=>card.classList.toggle('is-active',card===closestCard));
+};
+journeyViewport.addEventListener('scroll',()=>{
+  cancelAnimationFrame(journeyFrame);
+  journeyFrame=requestAnimationFrame(updateJourneyActive);
+},{passive:true});
+journeyViewport.addEventListener('wheel',event=>{
+  if(event.shiftKey){
+    event.preventDefault();
+    journeyViewport.scrollBy({left:event.deltaY||event.deltaX,behavior:'smooth'});
+  }
+},{passive:false});
+journeyViewport.addEventListener('pointerdown',event=>{
+  if(event.button!==1)return;
+  journeyDragging=true;
+  journeyStartX=event.clientX;
+  journeyStartScroll=journeyViewport.scrollLeft;
+  journeyViewport.classList.add('is-dragging');
+  journeyViewport.setPointerCapture(event.pointerId);
+  event.preventDefault();
+});
+journeyViewport.addEventListener('pointermove',event=>{
+  if(!journeyDragging)return;
+  journeyViewport.scrollLeft=journeyStartScroll-(event.clientX-journeyStartX);
+});
+journeyViewport.addEventListener('pointerup',event=>{
+  journeyDragging=false;
+  journeyViewport.classList.remove('is-dragging');
+  journeyViewport.releasePointerCapture(event.pointerId);
+});
+journeyViewport.addEventListener('pointercancel',()=>{
+  journeyDragging=false;
+  journeyViewport.classList.remove('is-dragging');
+});
+window.addEventListener('load',()=>{
+  const middleCard=journeyCards[1];
+  journeyViewport.scrollLeft=middleCard.offsetLeft-(journeyViewport.clientWidth-middleCard.offsetWidth)/2;
+  updateJourneyActive();
+});
 </script>
 </body>
 </html>
