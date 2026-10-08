@@ -18,6 +18,21 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_login_and_registration_screens_remain_available_with_another_tab_session(): void
+    {
+        $user = User::factory()->create(['role' => 'customer']);
+
+        $this->actingAs($user)
+            ->get('/login')
+            ->assertOk()
+            ->assertSee('Masuk pelanggan atau kurir');
+
+        $this->actingAs($user)
+            ->get('/register')
+            ->assertOk()
+            ->assertSee('Buat akun operasional');
+    }
+
     public function test_default_dashboard_redirects_to_yojek(): void
     {
         $user = User::factory()->create(['role' => 'customer']);
@@ -111,7 +126,7 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/');
     }
 
-    public function test_api_logout_revokes_yojek_token_and_invalidates_web_session(): void
+    public function test_api_logout_revokes_only_this_tab_token(): void
     {
         $user = User::factory()->create(['role' => 'customer']);
         $token = 'api-session-token';
@@ -128,9 +143,11 @@ class AuthenticationTest extends TestCase
             ->assertOk()
             ->assertJsonPath('ok', true);
 
-        $this->assertGuest();
+        $this->assertAuthenticatedAs($user);
         $this->assertDatabaseMissing('yojek_sessions', ['token_hash' => hash('sha256', $token)]);
-        $this->getJson('/api/yojek/state')->assertUnauthorized();
+        $this->withHeader('X-Yojek-Token', $token)
+            ->getJson('/api/yojek/state')
+            ->assertUnauthorized();
     }
 
     public function test_customer_and_courier_data_api_routes_are_not_registered(): void

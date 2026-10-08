@@ -5,6 +5,8 @@
         <p class="mt-2 text-sm text-slate-600">Data ini langsung dipakai sebagai profil di aplikasi pelanggan atau kurir.</p>
     </div>
 
+    <p id="register-error" class="mb-4 hidden rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700" role="alert"></p>
+
     <form method="POST" action="{{ route('register') }}" class="space-y-5">
         @csrf
 
@@ -83,5 +85,45 @@
 
         roleSelect.addEventListener('change', toggleVehicleField);
         toggleVehicleField();
+
+        const registerForm = document.querySelector('form');
+        registerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const errorBox = document.getElementById('register-error');
+            errorBox.classList.add('hidden');
+
+            const xsrfCookie = document.cookie.split(';').find((cookie) => cookie.trim().startsWith('XSRF-TOKEN='));
+            const xsrfToken = xsrfCookie ? decodeURIComponent(xsrfCookie.trim().slice('XSRF-TOKEN='.length)) : '';
+
+            try {
+                const response = await fetch(@json(url('/api/yojek/register')), {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}),
+                    },
+                    body: JSON.stringify(Object.fromEntries(new FormData(registerForm))),
+                });
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.message || Object.values(result.errors || {}).flat()[0] || 'Pendaftaran gagal.');
+                }
+
+                sessionStorage.removeItem('yojek_token_customer_v1');
+                sessionStorage.removeItem('yojek_token_courier_v1');
+                sessionStorage.setItem(
+                    result.role === 'courier' ? 'yojek_token_courier_v1' : 'yojek_token_customer_v1',
+                    result.token,
+                );
+                window.location.assign(result.role === 'courier'
+                    ? @json(url('/Yojek/app kurir yojek.html'))
+                    : @json(url('/Yojek/app pelanggan yojek.html')));
+            } catch (error) {
+                errorBox.textContent = error.message;
+                errorBox.classList.remove('hidden');
+            }
+        });
     </script>
 </x-guest-layout>

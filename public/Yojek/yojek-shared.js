@@ -1,6 +1,6 @@
 (function () {
-  // The browser only keeps a short-lived cache of the API response for
-  // rendering. MySQL is the source of truth for every operational action.
+  // Each tab keeps its API token and rendering cache separately. MySQL remains
+  // the source of truth for operational data shared between customer and courier.
   const STORAGE_KEY = 'yojek_ops_data_v2';
   const DEFAULT_DATA = { orders: [], finance: [], couriers: [], actor: null, syncedAt: null };
   const SERVER_MODE = /^https?:$/.test(window.location.protocol);
@@ -21,6 +21,9 @@
     'yojek_customer_active_username_v2',
     'yojek_courier_profiles_v2',
     'yojek_courier_active_username_v2',
+    'yojek_token_admin_v1',
+    'yojek_token_customer_v1',
+    'yojek_token_courier_v1',
   ].forEach((key) => localStorage.removeItem(key));
 
   function clone(value) {
@@ -29,7 +32,7 @@
 
   function read() {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null');
       if (!saved) return clone(DEFAULT_DATA);
 
       return {
@@ -52,7 +55,7 @@
       actor: data.actor && typeof data.actor === 'object' ? data.actor : null,
       syncedAt: data.syncedAt || new Date().toISOString(),
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     window.dispatchEvent(new CustomEvent('yojek:datachange', { detail: next }));
     return next;
   }
@@ -92,7 +95,7 @@
         Accept: 'application/json',
         'Content-Type': 'application/json',
         ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}),
-        ...(localStorage.getItem(TOKEN_KEY) ? { 'X-Yojek-Token': localStorage.getItem(TOKEN_KEY) } : {}),
+        ...(sessionStorage.getItem(TOKEN_KEY) ? { 'X-Yojek-Token': sessionStorage.getItem(TOKEN_KEY) } : {}),
         ...(options.headers || {}),
       },
     });
@@ -108,6 +111,7 @@
       const failure = new Error(message);
       failure.status = response.status;
       if (response.status === 401 && redirectOnUnauthorized) {
+        sessionStorage.removeItem(TOKEN_KEY);
         failure.message = 'Sesi login sudah berakhir. Mengarahkan ke halaman login…';
         queueLoginRedirect();
       }
@@ -118,22 +122,17 @@
   }
 
   async function sync() {
-    if (!localStorage.getItem(TOKEN_KEY)) {
+    if (!sessionStorage.getItem(TOKEN_KEY)) {
+      if (!/dashboard/i.test(window.location.pathname)) {
+        queueLoginRedirect();
+        throw new Error('Login ulang untuk tab ini diperlukan.');
+      }
+
       const tokenResponse = await request('/token', { method: 'POST', body: '{}' });
-      localStorage.setItem(TOKEN_KEY, tokenResponse.token);
+      sessionStorage.setItem(TOKEN_KEY, tokenResponse.token);
     }
 
-    let state;
-    try {
-      state = await request('/state', {}, false);
-    } catch (error) {
-      if (error.status !== 401) throw error;
-
-      localStorage.removeItem(TOKEN_KEY);
-      const tokenResponse = await request('/token', { method: 'POST', body: '{}' });
-      localStorage.setItem(TOKEN_KEY, tokenResponse.token);
-      state = await request('/state');
-    }
+    const state = await request('/state');
 
     sessionActor = state.actor && typeof state.actor === 'object' ? state.actor : null;
     return write({
@@ -199,9 +198,11 @@
   async function logout() {
     try {
       await request('/logout', { method: 'POST', body: '{}' });
+    } catch (error) {
+      if (error.status !== 401) throw error;
     } finally {
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
     }
     const loginPath = /dashboard/i.test(window.location.pathname) ? 'admin/login' : 'login';
     window.location.assign(applicationUrl(loginPath));

@@ -6,10 +6,12 @@ use App\Models\FinanceEntry;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\YojekSession;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -17,9 +19,72 @@ class YojekController
 {
     public function issueToken(Request $request): JsonResponse
     {
-        $actor = $this->actor($request);
+        $actor = $this->actor($request)
+            ?? ($request->session()->get('yojek_admin') === true ? ['role' => 'admin'] : null);
         abort_unless($actor, 401);
         return response()->json(['token' => $this->createToken($actor instanceof User ? $actor->id : null, $actor instanceof User ? $actor->role : 'admin')]);
+    }
+
+    public function register(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'role' => ['required', 'in:customer,courier'],
+            'phone' => ['required', 'string', 'max:30'],
+            'address' => ['required', 'string', 'max:255'],
+            'vehicle' => ['nullable', 'required_if:role,courier', 'string', 'max:50'],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'role' => $data['role'],
+            'phone' => $data['phone'],
+            'address' => $data['address'],
+            'vehicle' => $data['role'] === 'courier' ? ($data['vehicle'] ?? null) : null,
+            'password' => Hash::make($data['password']),
+        ]);
+
+        event(new Registered($user));
+
+        return response()->json([
+            'token' => $this->createToken($user->id, $user->role),
+            'role' => $user->role,
+        ], 201);
+    }
+
+    public function login(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'role' => ['required', 'in:customer,courier'],
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+        $throttleKey = Str::transliterate(Str::lower($data['email']).'|'.$request->ip());
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            throw ValidationException::withMessages([
+                'email' => trans('auth.throttle', [
+                    'seconds' => RateLimiter::availableIn($throttleKey),
+                    'minutes' => ceil(RateLimiter::availableIn($throttleKey) / 60),
+                ]),
+            ]);
+        }
+
+        $user = User::query()->where('email', $data['email'])->first();
+        if (! $user || $user->role !== $data['role'] || ! Hash::check($data['password'], $user->password)) {
+            RateLimiter::hit($throttleKey);
+            throw ValidationException::withMessages(['email' => trans('auth.failed')]);
+        }
+
+        RateLimiter::clear($throttleKey);
+
+        return response()->json([
+            'token' => $this->createToken($user->id, $user->role),
+            'role' => $user->role,
+        ]);
     }
 
     public function state(Request $request): JsonResponse
@@ -77,15 +142,9 @@ class YojekController
 
     public function logout(Request $request): JsonResponse
     {
-        $this->authorizeAccess($request);
         $token = $this->token($request);
-        if ($token) {
-            YojekSession::query()->where('token_hash', hash('sha256', $token))->delete();
-        }
-
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        abort_unless($token, 401);
+        YojekSession::query()->where('token_hash', hash('sha256', $token))->delete();
 
         return response()->json(['ok' => true]);
     }
@@ -234,7 +293,7 @@ class YojekController
 
     private function isAdmin(Request $request): bool
     {
-        return $request->session()->get('yojek_admin') === true || $this->actorRole($request) === 'admin';
+        return $this->actorRole($request) === 'admin';
     }
 
     private function token(Request $request): ?string
@@ -250,9 +309,6 @@ class YojekController
             if (! $session) return null;
             return $session->role === 'admin' ? ['role' => 'admin'] : $session->user;
         }
-        $user = $request->user()?->fresh();
-        if ($user) return $user;
-        if ($request->session()->get('yojek_admin') === true) return ['role' => 'admin'];
         return null;
     }
 
