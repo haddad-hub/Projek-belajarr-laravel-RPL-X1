@@ -1,15 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\YojekController;
 use Illuminate\Support\Facades\Route;
-
-Route::middleware(['web', 'auth'])->group(function () {
-    Route::get('/customers', [UserController::class, 'customers']);
-    Route::get('/customers/{user}', [UserController::class, 'customer']);
-    Route::get('/couriers', [UserController::class, 'couriers']);
-    Route::get('/couriers/{user}', [UserController::class, 'courier']);
-});
 
 // Yojek uses the Laravel session cookie. The controller also accepts the
 // dedicated admin session because the admin dashboard has a separate login.
