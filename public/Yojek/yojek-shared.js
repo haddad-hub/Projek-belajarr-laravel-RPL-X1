@@ -75,18 +75,26 @@
     return new Error('Aplikasi harus dibuka melalui server Yojek setelah login. Data lokal lama tidak digunakan.');
   }
 
-  async function request(path, options = {}) {
+  async function request(path, options = {}, redirectOnUnauthorized = true) {
     if (!SERVER_MODE) throw offlineError();
 
+    const xsrfCookie = document.cookie
+      .split(';')
+      .find((cookie) => cookie.trim().startsWith('XSRF-TOKEN='));
+    const xsrfToken = xsrfCookie
+      ? decodeURIComponent(xsrfCookie.trim().slice('XSRF-TOKEN='.length))
+      : '';
+
     const response = await fetch(API_ROOT + path, {
+      ...options,
       credentials: 'same-origin',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}),
         ...(localStorage.getItem(TOKEN_KEY) ? { 'X-Yojek-Token': localStorage.getItem(TOKEN_KEY) } : {}),
         ...(options.headers || {}),
       },
-      ...options,
     });
 
     if (!response.ok) {
@@ -99,7 +107,7 @@
       }
       const failure = new Error(message);
       failure.status = response.status;
-      if (response.status === 401) {
+      if (response.status === 401 && redirectOnUnauthorized) {
         failure.message = 'Sesi login sudah berakhir. Mengarahkan ke halaman login…';
         queueLoginRedirect();
       }
@@ -114,7 +122,19 @@
       const tokenResponse = await request('/token', { method: 'POST', body: '{}' });
       localStorage.setItem(TOKEN_KEY, tokenResponse.token);
     }
-    const state = await request('/state');
+
+    let state;
+    try {
+      state = await request('/state', {}, false);
+    } catch (error) {
+      if (error.status !== 401) throw error;
+
+      localStorage.removeItem(TOKEN_KEY);
+      const tokenResponse = await request('/token', { method: 'POST', body: '{}' });
+      localStorage.setItem(TOKEN_KEY, tokenResponse.token);
+      state = await request('/state');
+    }
+
     sessionActor = state.actor && typeof state.actor === 'object' ? state.actor : null;
     return write({
       orders: state.orders,

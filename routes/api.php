@@ -5,9 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 // Yojek uses the Laravel session cookie. The controller also accepts the
 // dedicated admin session because the admin dashboard has a separate login.
-Route::middleware(['web'])->withoutMiddleware([
-    \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class,
-])->group(function () {
+Route::middleware(['web'])->group(function () {
     Route::get('/yojek/state', [YojekController::class, 'state']);
     Route::post('/yojek/token', [YojekController::class, 'issueToken']);
     Route::post('/yojek/profile', [YojekController::class, 'updateProfile']);
