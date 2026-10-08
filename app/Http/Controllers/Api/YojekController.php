@@ -77,13 +77,15 @@ class YojekController
 
     public function logout(Request $request): JsonResponse
     {
+        $this->authorizeAccess($request);
         $token = $this->token($request);
         if ($token) {
             YojekSession::query()->where('token_hash', hash('sha256', $token))->delete();
-        } else {
-            $this->authorizeAccess($request);
-            Auth::guard('web')->logout();
         }
+
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json(['ok' => true]);
     }
