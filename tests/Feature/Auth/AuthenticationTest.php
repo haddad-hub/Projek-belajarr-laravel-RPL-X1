@@ -18,6 +18,15 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_default_dashboard_redirects_to_yojek(): void
+    {
+        $user = User::factory()->create(['role' => 'customer']);
+
+        $this->actingAs($user)
+            ->get('/dashboard')
+            ->assertRedirect(route('yojek.launch'));
+    }
+
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         $user = User::factory()->create();
