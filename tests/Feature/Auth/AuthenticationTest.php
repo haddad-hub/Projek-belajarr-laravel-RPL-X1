@@ -3,6 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use App\Models\YojekSession;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,6 +18,15 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_default_dashboard_redirects_to_yojek(): void
+    {
+        $user = User::factory()->create(['role' => 'customer']);
+
+        $this->actingAs($user)
+            ->get('/dashboard')
+            ->assertRedirect(route('yojek.launch'));
+    }
+
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         $user = User::factory()->create();
@@ -29,6 +39,20 @@ class AuthenticationTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('yojek.launch', absolute: false));
+    }
+
+    public function test_customer_login_clears_an_existing_admin_session_flag(): void
+    {
+        $user = User::factory()->create(['role' => 'customer']);
+
+        $this->withSession(['yojek_admin' => true])
+            ->post('/login', [
+                'role' => 'customer',
+                'email' => $user->email,
+                'password' => 'password',
+            ])
+            ->assertRedirect(route('yojek.launch', absolute: false))
+            ->assertSessionMissing('yojek_admin');
     }
 
     public function test_admin_can_authenticate_using_static_credentials(): void
@@ -73,37 +97,52 @@ class AuthenticationTest extends TestCase
     public function test_users_can_logout(): void
     {
         $user = User::factory()->create();
+        YojekSession::create([
+            'token_hash' => hash('sha256', 'user-session-token'),
+            'user_id' => $user->id,
+            'role' => $user->role,
+            'expires_at' => now()->addDay(),
+        ]);
 
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
+        $this->assertDatabaseMissing('yojek_sessions', ['user_id' => $user->id]);
         $response->assertRedirect('/');
     }
 
-    public function test_authenticated_users_can_read_customer_and_courier_api_data(): void
+    public function test_api_logout_revokes_yojek_token_and_invalidates_web_session(): void
+    {
+        $user = User::factory()->create(['role' => 'customer']);
+        $token = 'api-session-token';
+        YojekSession::create([
+            'token_hash' => hash('sha256', $token),
+            'user_id' => $user->id,
+            'role' => $user->role,
+            'expires_at' => now()->addDay(),
+        ]);
+
+        $this->actingAs($user)
+            ->withHeader('X-Yojek-Token', $token)
+            ->postJson('/api/yojek/logout')
+            ->assertOk()
+            ->assertJsonPath('ok', true);
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('yojek_sessions', ['token_hash' => hash('sha256', $token)]);
+        $this->getJson('/api/yojek/state')->assertUnauthorized();
+    }
+
+    public function test_customer_and_courier_data_api_routes_are_not_registered(): void
     {
         $viewer = User::factory()->create(['role' => 'customer']);
-        $customer = User::factory()->create(['role' => 'customer']);
-        $courier = User::factory()->create([
-            'role' => 'courier',
-            'vehicle' => 'Motor',
-        ]);
 
         $this->actingAs($viewer)
             ->getJson('/api/customers')
-            ->assertOk()
-            ->assertJsonFragment(['id' => $customer->id, 'email' => $customer->email])
-            ->assertJsonMissing(['vehicle']);
+            ->assertNotFound();
 
         $this->actingAs($viewer)
             ->getJson('/api/couriers')
-            ->assertOk()
-            ->assertJsonFragment(['id' => $courier->id, 'vehicle' => 'Motor']);
-    }
-
-    public function test_api_user_data_requires_authentication(): void
-    {
-        $this->getJson('/api/customers')->assertUnauthorized();
-        $this->getJson('/api/couriers')->assertUnauthorized();
+            ->assertNotFound();
     }
 }

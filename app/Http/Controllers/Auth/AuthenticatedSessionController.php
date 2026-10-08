@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\YojekSession;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,6 +47,8 @@ class AuthenticatedSessionController extends Controller
                 ->withErrors(['role' => 'Role akun tidak sesuai dengan pilihan login.']);
         }
 
+        $request->session()->forget('yojek_admin');
+
         return redirect()->intended(route('yojek.launch', absolute: false));
     }
 
@@ -76,6 +79,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = Auth::guard('web')->user();
+        if ($user) {
+            YojekSession::query()->where('user_id', $user->getAuthIdentifier())->delete();
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

@@ -3,6 +3,7 @@
 .env
 .env.backup
 .env.production
+/database/database.sqlite
 .phpactor.json
 .phpunit.result.cache
 /.codex
@@ -19,6 +20,8 @@
 /public/hot
 /public/storage
 /public/Bonjek/.git-backup-before-portfolio-link/
+/public/Yojek/.git-backup-before-portfolio-link/
+/storage/app/yojek-backups/
 /storage/*.key
 /storage/pail
 /vendor

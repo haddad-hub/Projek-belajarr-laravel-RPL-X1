@@ -8,7 +8,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return redirect()->route('yojek.launch');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/yojek-launch', function () {
